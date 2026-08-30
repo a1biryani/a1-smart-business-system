@@ -189,7 +189,8 @@
       <div class="card">
         <div class="icon">💸</div>
         <h3>Expense</h3>
-        <div class="amount">₹0</div>
+        <h3>Expense</h3>
+<div class="amount" id="totalExpense">₹0</div>
       </div>
 
       <div class="card">
@@ -304,6 +305,26 @@ function openProduction() {
 
     alert("Production " + kg + " KG Successfully Saved!");
 }
+  function openExpense() {
+    let expense = prompt("आज का Expense Amount दर्ज करें (₹):");
+
+    if (expense === null) {
+        return;
+    }
+
+    expense = Number(expense);
+
+    if (isNaN(expense) || expense < 0) {
+        alert("कृपया सही Expense Amount दर्ज करें");
+        return;
+    }
+
+    document.getElementById("totalExpense").innerText = "₹" + expense;
+
+    localStorage.setItem("totalExpense", expense);
+
+    alert("Expense ₹" + expense + " Successfully Saved!");
+  }
 window.onload = function() {
   let savedSale = localStorage.getItem("totalSales");
 
@@ -315,6 +336,11 @@ window.onload = function() {
 
 if (savedProduction) {
     document.getElementById("todayProduction").innerText = savedProduction + " KG";
+}
+  let savedExpense = localStorage.getItem("totalExpense");
+
+if (savedExpense) {
+    document.getElementById("totalExpense").innerText = "₹" + savedExpense;
 }
   }
 </script>
