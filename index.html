@@ -189,7 +189,7 @@
       <div class="card">
         <div class="icon">💸</div>
         <h3>Expense</h3>
-        <div class="amount">₹0</div>
+        <div class="amount" id="totalSales">₹0</div>
       </div>
 
       <div class="card">
@@ -265,7 +265,32 @@
   </div>
 <script>
 function openSale() {
-  alert("Sale Entry Coming Soon");
+  let amount = prompt("आज की Sale Amount दर्ज करें (₹):");
+
+  if (amount === null) {
+    return;
+  }
+
+  amount = Number(amount);
+
+  if (isNaN(amount) || amount <= 0) {
+    alert("कृपया सही Sale Amount दर्ज करें");
+    return;
+  }
+
+  document.getElementById("totalSales").innerText = "₹" + amount;
+
+  localStorage.setItem("totalSales", amount);
+
+  alert("Sale ₹" + amount + " Successfully Saved!");
+}
+
+window.onload = function() {
+  let savedSale = localStorage.getItem("totalSales");
+
+  if (savedSale) {
+    document.getElementById("totalSales").innerText = "₹" + savedSale;
+  }
 }
 </script>
 </body>
