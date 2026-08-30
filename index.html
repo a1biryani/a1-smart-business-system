@@ -205,7 +205,7 @@
       <div class="business-card">
         <span>🍚</span>
         <h3>Today's Production</h3>
-        <p>0 KG</p>
+        <p id="todayProduction">0 KG</p>
       </div>
 
       <div class="business-card">
@@ -231,7 +231,7 @@
 
     <div class="quick-actions">
       <button class="action" onclick="openSale()">➕ Sale</button>
-      <button class="action">🍚 Production</button>
+      <button class="action" onclick="openProduction()">🍚 Production</button>
       <button class="action">💸 Expense</button>
     </div>
 
@@ -284,7 +284,26 @@ function openSale() {
 
   alert("Sale ₹" + amount + " Successfully Saved!");
 }
+function openProduction() {
+    let kg = prompt("आज की Production KG में दर्ज करें:");
 
+    if (kg === null) {
+        return;
+    }
+
+    kg = Number(kg);
+
+    if (isNaN(kg) || kg <= 0) {
+        alert("कृपया सही Production KG दर्ज करें");
+        return;
+    }
+
+    document.getElementById("todayProduction").innerText = kg + " KG";
+
+    localStorage.setItem("todayProduction", kg);
+
+    alert("Production " + kg + " KG Successfully Saved!");
+}
 window.onload = function() {
   let savedSale = localStorage.getItem("totalSales");
 
@@ -292,6 +311,12 @@ window.onload = function() {
     document.getElementById("totalSales").innerText = "₹" + savedSale;
   }
 }
+  let savedProduction = localStorage.getItem("todayProduction");
+
+if (savedProduction) {
+    document.getElementById("todayProduction").innerText = savedProduction + " KG";
+}
+  }
 </script>
 </body>
 </html>
