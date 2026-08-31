@@ -196,7 +196,7 @@
       <div class="card">
         <div class="icon">📈</div>
         <h3>Profit</h3>
-        <div class="amount">₹0</div>
+        <div class="amount" id="totalProfit">₹0</div>
       </div>
     </div>
 
@@ -265,6 +265,14 @@
     </div>
   </div>
 <script>
+  function updateProfit() {
+  let sales = Number(localStorage.getItem("totalSales")) || 0;
+  let expense = Number(localStorage.getItem("totalExpense")) || 0;
+
+  let profit = sales - expense;
+
+  document.getElementById("totalProfit").innerText = "₹" + profit;
+  }
 function openSale() {
   let amount = prompt("आज की Sale Amount दर्ज करें (₹):");
 
@@ -282,7 +290,7 @@ function openSale() {
   document.getElementById("totalSales").innerText = "₹" + amount;
 
   localStorage.setItem("totalSales", amount);
-
+updateProfit();
   alert("Sale ₹" + amount + " Successfully Saved!");
 }
 function openProduction() {
@@ -322,7 +330,7 @@ function openProduction() {
     document.getElementById("totalExpense").innerText = "₹" + expense;
 
     localStorage.setItem("totalExpense", expense);
-
+updateProfit();
     alert("Expense ₹" + expense + " Successfully Saved!");
   }
 window.onload = function() {
@@ -342,6 +350,7 @@ if (savedProduction) {
 if (savedExpense) {
     document.getElementById("totalExpense").innerText = "₹" + savedExpense;
 }
+  updateProfit();
   }
 </script>
 </body>
