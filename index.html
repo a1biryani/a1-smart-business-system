@@ -381,7 +381,7 @@
         </div>
         <div class="form-group">
           <label>New Rate ₹/KG</label>
-          <input id="oilRate" type="number" min="0" step="0.01" placeholder="e.g. 150">
+          <input id="oilRate" type="number" min="0" step="0.01" placeholder="e.g. 180">
         </div>
       </div>
 
@@ -389,8 +389,7 @@
         <div class="mini">Purchase Cost<b id="oilPurchaseCost">₹0.00</b></div>
         <div class="mini">After Purchase Stock<b id="oilAfterStock">0.000 KG</b></div>
       </div>
-
-      <button class="save-btn" onclick="saveOilPurchase()">➕ Add Oil Purchase</button>
+            <button class="save-btn" onclick="saveOilPurchase()">➕ Add Oil Purchase</button>
       <p class="note">हर नई purchase अलग record होगी और उसका नया Rate save रहेगा।</p>
     </div>
 
@@ -413,7 +412,7 @@
       <div class="form-grid">
         <div class="form-group">
           <label>Quantity (KG)</label>
-          <input id="chickenQty" type="number" min="0" step="0.001" placeholder="e.g. 5">
+          <input id="chickenQty" type="number" min="0" step="0.001" placeholder="e.g. 10">
         </div>
         <div class="form-group">
           <label>New Rate ₹/KG</label>
@@ -427,7 +426,7 @@
       </div>
 
       <button class="save-btn" onclick="saveChickenPurchase()">➕ Add Chicken Purchase</button>
-      <p class="note">हर नई purchase अलग record होगी और उसका नया Rate save रहेगा।</p>
+      <p class="note">Chicken purchase में Quantity और Rate दोनों save होंगे, ताकि अलग-अलग खरीद rates का हिसाब रखा जा सके।</p>
     </div>
 
     <div class="master-card">
@@ -435,90 +434,164 @@
       <div id="chickenHistory"></div>
       <button class="view-all-btn" onclick="openHistoryPage('chicken')">View All Chicken History →</button>
     </div>
-
-    <div class="master-card">
-      <span style="font-size:30px;">🌶️</span>
-      <h3>Create Masala Batch</h3>
-      <p>Masala Master में saved 25 मसालों की recipe से तैयार Biryani Masala Batch बनाएं। Weight, Cost और ₹/KG automatic calculate होंगे।</p>
-      <div class="stock-big"><small>Current Prepared Masala Stock</small><b id="masalaStock">0.000 KG</b></div>
-      <div class="masala-summary" style="margin-bottom:6px;">
-        <div class="mini">This Batch Weight<b id="readyBatchWeight">0.000 KG</b></div>
-        <div class="mini">This Batch Cost<b id="readyBatchCost">₹0.00</b></div>
-        <div class="mini">Batch Rate ₹/KG<b id="readyBatchRate">₹0.00</b></div>
-        <div class="mini">After Batch Stock<b id="masalaAfterStock">0.000 KG</b></div>
-      </div>
-      <button class="save-btn" onclick="createMasalaBatch()">🌶️ Create Masala Batch</button>
-      <p class="note">पहले Settings → Masala Master में 25 मसालों का Name, ₹/KG और Batch Gram save करें। उसी recipe से Batch बनेगा। Production में 1 KG Rice पर 130 Gram Prepared Masala automatically deduct होगा।</p>
-    </div>
   </div>
-    <div class="container history-page" id="historyPage">
+
+
+  <div class="container history-page" id="historyPage">
     <div class="settings-header">
       <button class="back-btn" onclick="openStock()">← Back</button>
-      <div><h2>Purchase History 📋</h2><p style="font-size:12px;color:#666;margin-top:4px;">All Purchase Records</p></div>
+      <div>
+        <h2>Purchase History 📜</h2>
+        <p style="font-size:12px;color:#666;margin-top:4px;">Complete Purchase Records</p>
+      </div>
     </div>
-    <div class="history-tabs" style="grid-template-columns:repeat(4,1fr);">
-      <button id="riceHistoryTab" class="history-tab active" onclick="showFullHistory('rice')">🍚 Rice</button>
-      <button id="oilHistoryTab" class="history-tab" onclick="showFullHistory('oil')">🛢️ Oil</button>
-      <button id="chickenHistoryTab" class="history-tab" onclick="showFullHistory('chicken')">🍗 Chicken</button>
-      <button id="masalaHistoryTab" class="history-tab" onclick="showFullHistory('masala')">🌶️ Masala</button>
-    </div>
+
     <div class="master-card">
-      <h3 id="fullHistoryTitle">All Rice Purchase History</h3>
-      <div id="fullHistoryList"></div>
+      <div class="history-tabs">
+        <button class="history-tab active" id="riceHistoryTab" onclick="showHistoryTab('rice')">🍚 Rice</button>
+        <button class="history-tab" id="oilHistoryTab" onclick="showHistoryTab('oil')">🛢️ Oil</button>
+      </div>
+
+      <div id="riceHistoryFull"></div>
+      <div id="oilHistoryFull" style="display:none;"></div>
+    </div>
+
+    <div class="master-card">
+      <div class="history-tabs">
+        <button class="history-tab active" id="chickenHistoryTab" onclick="showHistoryTab('chicken')">🍗 Chicken</button>
+        <button class="history-tab" id="masalaHistoryTab" onclick="showHistoryTab('masala')">🌶️ Masala</button>
+      </div>
+
+      <div id="chickenHistoryFull"></div>
+      <div id="masalaHistoryFull" style="display:none;"></div>
     </div>
   </div>
 
 
-  <div class="container settings-page" id="productionPage">
+  <div class="container settings-page" id="productionPage" style="display:none;">
     <div class="settings-header">
       <button class="back-btn" onclick="openEntryMenu()">← Back</button>
-      <div><h2>Daily Production 🍚</h2><p style="font-size:12px;color:#666;margin-top:4px;">Automatic Cost Calculation</p></div>
+      <div>
+        <h2>Production 🏭</h2>
+        <p style="font-size:12px;color:#666;margin-top:4px;">Daily Biryani Production</p>
+      </div>
     </div>
+
     <div class="master-card">
-      <p><b>Rules:</b> 1 KG Rice = Rice Purchase Cost + 130g Masala + 220g Oil + ₹50 Other Items</p>
       <div class="form-grid">
-        <div class="form-group"><label>Date</label><input id="productionDate" type="date"></div>
-        <div class="form-group"><label>Rice Used (KG)</label><input id="productionRice" type="number" min="0" step="0.001" placeholder="e.g. 4"></div>
-        <div class="form-group"><label>Chicken Quantity (KG)</label><input id="productionChickenQty" type="number" min="0" step="0.001" placeholder="Actual quantity"></div>
-        <div class="form-group"><label>Chicken Rate ₹/KG</label><input id="productionChickenRate" type="number" min="0" step="0.01" placeholder="Actual rate"></div>
+        <div class="form-group">
+          <label>Date</label>
+          <input id="productionDate" type="date">
+        </div>
+
+        <div class="form-group">
+          <label>Rice Used (KG)</label>
+          <input id="productionRice" type="number" min="0" step="0.001" placeholder="e.g. 5">
+        </div>
+
+        <div class="form-group">
+          <label>Chicken Used (KG)</label>
+          <input id="productionChickenQty" type="number" min="0" step="0.001" placeholder="e.g. 6.25">
+        </div>
+
+        <div class="form-group">
+          <label>Chicken Rate ₹/KG</label>
+          <input id="productionChickenRate" type="number" min="0" step="0.01" placeholder="e.g. 220">
+        </div>
       </div>
-      <div class="masala-summary">
-        <div class="mini">Rice Cost<b id="prodRiceCost">₹0.00</b></div>
-        <div class="mini">Masala Used<b id="prodMasalaUsed">0 g</b></div>
-        <div class="mini">Masala Cost<b id="prodMasalaCost">₹0.00</b></div>
-        <div class="mini">Oil Used<b id="prodOilUsed">0 g</b></div>
-        <div class="mini">Oil Cost<b id="prodOilCost">₹0.00</b></div>
-        <div class="mini">Other Items Cost<b id="prodOtherCost">₹0.00</b></div>
-        <div class="mini">Chicken Cost<b id="prodChickenCost">₹0.00</b></div>
-        <div class="mini" style="grid-column:1/-1;">Total Production Cost<b id="prodTotalCost">₹0.00</b></div>
+
+      <div class="report-grid">
+        <div class="mini">
+          Rice Cost
+          <b id="prodRiceCost">₹0.00</b>
+        </div>
+
+        <div class="mini">
+          Masala Used
+          <b id="prodMasalaUsed">0 g</b>
+        </div>
+
+        <div class="mini">
+          Masala Cost
+          <b id="prodMasalaCost">₹0.00</b>
+        </div>
+
+        <div class="mini">
+          Oil Used
+          <b id="prodOilUsed">0 g</b>
+        </div>
+
+        <div class="mini">
+          Oil Cost
+          <b id="prodOilCost">₹0.00</b>
+        </div>
+
+        <div class="mini">
+          Other Cost
+          <b id="prodOtherCost">₹0.00</b>
+        </div>
+
+        <div class="mini">
+          Chicken Cost
+          <b id="prodChickenCost">₹0.00</b>
+        </div>
       </div>
+
+      <div class="report-total">
+        <small>Total Production Cost</small>
+        <b id="prodTotalCost">₹0.00</b>
+      </div>
+
       <button class="save-btn" onclick="saveProduction()">💾 Save Production</button>
-      <p class="note">Production save होने के बाद Stock automatically deduct होगा और नीचे history दिखाई देगी।</p>
-      <div class="master-card" style="margin-top:14px;">
-        <h3>Production History 📋</h3>
-        <div id="productionHistoryBox" style="margin-top:10px;"></div>
+
+      <p class="note">
+        Production rule: 1 KG Rice में 130g Masala, 220g Oil और ₹50 Other Cost।
+        Rice, Oil, Chicken और Prepared Masala Stock save होने पर automatically deduct होंगे।
+      </p>
+    </div>
+
+    <div class="master-card">
+      <h3>Production History</h3>
+      <div id="productionHistoryBox"></div>
+    </div>
+  </div>
+
+
+  <div class="container settings-page" id="salesPage" style="display:none;">
+    <div class="settings-header">
+      <button class="back-btn" onclick="openEntryMenu()">← Back</button>
+      <div>
+        <h2>Daily Sales 💰</h2>
+        <p style="font-size:12px;color:#666;margin-top:4px;">Daily Total Sales Entry</p>
       </div>
     </div>
-  </div>
 
-  <div class="container settings-page" id="entryMenuPage" style="display:none;">
-    <div class="settings-header"><button class="back-btn" onclick="showDashboard()">← Back</button><div><h2>Daily Entry ➕</h2><p style="font-size:12px;color:#666;margin-top:4px;">आज की entry चुनें</p></div></div>
     <div class="master-card">
-      <button class="save-btn" onclick="openSale()">💰 Daily Sales</button>
-      <button class="save-btn" onclick="openProduction()" style="margin-top:12px;">🍚 Production</button>
-      <button class="save-btn" onclick="openStaffExpense()" style="margin-top:12px;">👷 Staff Expense</button>
-    </div>
-  </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Date</label>
+          <input id="salesDate" type="date">
+        </div>
 
-  <div class="container settings-page" id="salesPage">
-    <div class="settings-header"><button class="back-btn" onclick="openEntryMenu()">← Back</button><div><h2>Daily Sales 💰</h2><p style="font-size:12px;color:#666;margin-top:4px;">रोज सिर्फ Total Sales enter करें</p></div></div>
-    <div class="master-card">
-      <div class="form-group"><label>Date (Automatic)</label><input id="salesDate" type="date" disabled style="opacity:1;cursor:not-allowed;"></div>
-      <div class="form-group"><label>Total Sales ₹</label><input id="salesAmount" type="number" min="0" step="0.01" placeholder="आज की कुल बिक्री"></div>
-      <button class="save-btn" onclick="saveDailySale()">💾 Save Sales</button>
-      <div class="masala-summary" style="margin-top:14px;"><div class="mini" style="grid-column:1/-1;">Today's Saved Sales<b id="savedSalesPreview">₹0.00</b></div></div>
-      <button class="open-master" onclick="viewSalesHistory()">View All Sales History →</button>
+        <div class="form-group">
+          <label>Total Sales ₹</label>
+          <input id="salesAmount" type="number" min="0" step="0.01" placeholder="e.g. 3200">
+        </div>
+      </div>
+
+      <div class="stock-big">
+        <small>Saved Sales For Selected Date</small>
+        <b id="savedSalesPreview">₹0.00</b>
+      </div>
+
+      <button class="save-btn" onclick="saveDailySale()">💾 Save Daily Sales</button>
+      <button class="view-all-btn" onclick="viewSalesHistory()">📜 View Sales History</button>
+
       <div id="salesHistoryBox" style="display:none;margin-top:12px;"></div>
+
+      <p class="note">
+        एक date पर Daily Total Sales save होगी। उसी date पर दोबारा save करने पर पुरानी Sales amount update होगी।
+      </p>
     </div>
   </div>
 
@@ -526,24 +599,80 @@
   <div class="container settings-page" id="staffExpensePage" style="display:none;">
     <div class="settings-header">
       <button class="back-btn" onclick="openEntryMenu()">← Back</button>
-      <div><h2>Daily Staff Expense 👷</h2><p style="font-size:12px;color:#666;margin-top:4px;">रोज actual paid amount दर्ज करें</p></div>
-    </div>
-    <div class="master-card">
-      <div class="form-group"><label>Date (Automatic)</label><input id="staffExpenseDate" type="date" disabled style="opacity:1;cursor:not-allowed;"></div>
-      <div class="form-group"><label>Staff Payment ₹</label><input id="staffExpenseAmount" type="number" min="0" step="0.01" placeholder="आज दिया गया actual amount"></div>
-      <button class="save-btn" onclick="saveStaffExpense()">💾 Save Staff Expense</button>
-      <div class="masala-summary" style="margin-top:14px;">
-        <div class="mini" style="grid-column:1/-1;">Today's Saved Staff Expense<b id="savedStaffExpensePreview">₹0.00</b></div>
+      <div>
+        <h2>Staff Expense 👷</h2>
+        <p style="font-size:12px;color:#666;margin-top:4px;">Daily Actual Staff Payment</p>
       </div>
-      <button class="open-master" onclick="viewStaffExpenseHistory()">View Staff Expense History →</button>
+    </div>
+
+    <div class="master-card">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Date</label>
+          <input id="staffExpenseDate" type="date">
+        </div>
+
+        <div class="form-group">
+          <label>Staff Payment ₹</label>
+          <input id="staffExpenseAmount" type="number" min="0" step="0.01" placeholder="e.g. 150">
+        </div>
+      </div>
+
+      <div class="stock-big">
+        <small>Saved Staff Expense For Selected Date</small>
+        <b id="savedStaffExpensePreview">₹0.00</b>
+      </div>
+
+      <button class="save-btn" onclick="saveStaffExpense()">💾 Save Staff Expense</button>
+      <button class="view-all-btn" onclick="viewStaffExpenseHistory()">📜 View Staff History</button>
+
       <div id="staffExpenseHistoryBox" style="display:none;margin-top:12px;"></div>
+
+      <p class="note">
+        Staff payment fixed monthly expense नहीं है। हर दिन actual paid amount manually enter होगा।
+      </p>
     </div>
   </div>
+
+
+  <div class="container settings-page" id="entryMenuPage" style="display:none;">
+    <div class="settings-header">
+      <button class="back-btn" onclick="showDashboard()">← Back</button>
+      <div>
+        <h2>SBS Entry ✏️</h2>
+        <p style="font-size:12px;color:#666;margin-top:4px;">Daily Business Entries</p>
+      </div>
+    </div>
+
+    <div class="business-grid">
+      <div class="business-card" onclick="openProduction()" style="cursor:pointer;">
+        <span>🏭</span>
+        <h3>Production</h3>
+        <p>Rice + Chicken + Masala + Oil production cost</p>
+      </div>
+
+      <div class="business-card" onclick="openSale()" style="cursor:pointer;">
+        <span>💰</span>
+        <h3>Daily Sales</h3>
+        <p>Today's total sales enter करें</p>
+      </div>
+
+      <div class="business-card" onclick="openStaffExpense()" style="cursor:pointer;">
+        <span>👷</span>
+        <h3>Staff Expense</h3>
+        <p>Actual daily staff payment enter करें</p>
+      </div>
+    </div>
+  </div>
+
 
   <div class="container reports-page" id="reportsPage">
     <div class="settings-header">
       <button class="back-btn" onclick="showDashboard()">← Back</button>
-      <div><h2>Reports 📊</h2><p style="font-size:12px;color:#666;margin-top:4px;">Daily Profit / Loss Report</p></div>
+      <div>
+        <h2>Daily Reports 📊</h2>
+        <p style="font-size:12px;color:#666;margin-top:4px;">Sales • Cost • Profit / Loss</p>
+      </div>
     </div>
 
     <div class="report-date-card">
@@ -553,632 +682,494 @@
       </div>
 
       <div class="report-grid">
-        <div class="mini">Rice Used<b id="reportRiceUsed">0.000 KG</b></div>
-        <div class="mini">Production Cost<b id="reportProductionCost">₹0.00</b></div>
-        <div class="mini">Total Sales<b id="reportSales">₹0.00</b></div>
-        <div class="mini">Production Entries<b id="reportProductionEntries">0</b></div>
+        <div class="mini">
+          Rice Used
+          <b id="reportRiceUsed">0.000 KG</b>
+        </div>
+
+        <div class="mini">
+          Production Cost
+          <b id="reportProductionCost">₹0.00</b>
+        </div>
+
+        <div class="mini">
+          Sales
+          <b id="reportSales">₹0.00</b>
+        </div>
+
+        <div class="mini">
+          Production Entries
+          <b id="reportProductionEntries">0</b>
+        </div>
+
+        <div class="mini">
+          Staff Expense
+          <b id="reportStaffExpense">₹0.00</b>
+        </div>
       </div>
 
-      <div class="mini" style="margin-top:10px;">Staff Expense<b id="reportStaffExpense">₹0.00</b></div>
-
-    <div class="report-total">
+      <div class="report-total">
         <small id="reportResultLabel">Net Profit / Loss</small>
         <b id="reportProfit">₹0.00</b>
       </div>
 
-      <p class="report-note">Formula: Total Sales − Total Production Cost − Staff Expense = Net Profit / Loss</p>
+      <p class="report-note">
+        Net Profit/Loss = Total Sales − Production Cost − Daily Staff Expense.
+      </p>
     </div>
 
     <div class="master-card">
-      <h3>Recent Daily Reports</h3>
+      <h3>Recent Reports</h3>
       <div id="recentReports"></div>
     </div>
   </div>
 
+
   <div class="bottom-nav">
-    <div id="navDashboard" class="nav-item active" onclick="showDashboard()">
-      <span>🏠</span>
-      Dashboard
+    <div class="nav-item active" id="navDashboard" onclick="showDashboard()">
+      <span>🏠</span>Dashboard
     </div>
 
-    <div id="navStock" class="nav-item" onclick="openStock()">
-      <span>📦</span>
-      Stock
+    <div class="nav-item" id="navStock" onclick="openStock()">
+      <span>📦</span>Stock
     </div>
 
-    <div id="navEntry" class="nav-item" onclick="openEntryMenu()">
-      <span>➕</span>
-      Entry
+    <div class="nav-item" id="navEntry" onclick="openEntryMenu()">
+      <span>✏️</span>Entry
     </div>
 
-    <div id="navReports" class="nav-item" onclick="openReports()">
-      <span>📊</span>
-      Reports
+    <div class="nav-item" id="navReports" onclick="openReports()">
+      <span>📊</span>Reports
     </div>
 
-    <div id="navSettings" class="nav-item" onclick="openSettings()">
-      <span>⚙️</span>
-      Settings
+    <div class="nav-item" id="navSettings" onclick="openSettings()">
+      <span>⚙️</span>Settings
     </div>
   </div>
-<script>
+  <script>
 
-  const MASALA_KEY = "a1MasalaMaster";
-  const DEFAULT_MASALA_ROWS = 25;
-  // Initial 25-spice recipe from the approved list. These are only starter values;
-  // all names, rates and quantities remain fully editable in Masala Master.
-  const DEFAULT_MASALA_MASTER = [
-    {name:"लौंग मिर्च", rate:450, qty:1800},
-    {name:"अमचूर पाउडर", rate:300, qty:700},
-    {name:"सोंठ पाउडर", rate:800, qty:150},
-    {name:"अजीना मीठा", rate:160, qty:800},
-    {name:"काला नमक", rate:35, qty:2000},
-    {name:"सेंधा नमक", rate:45, qty:2000},
-    {name:"टाटा नमक", rate:30, qty:2000},
-    {name:"नींबू सत", rate:200, qty:200},
-    {name:"खस-खस", rate:1500, qty:250},
-    {name:"दालचीनी (1)", rate:560, qty:100},
-    {name:"इलायची (1)", rate:4600, qty:50},
-    {name:"खुश्कू मसाला", rate:2500, qty:230},
-    {name:"स्टोन फ्लावर", rate:1000, qty:50},
-    {name:"जीरा", rate:300, qty:300},
-    {name:"शाही जीरा अफगानी", rate:1200, qty:150},
-    {name:"काली मिर्च", rate:850, qty:100},
-    {name:"लौंग", rate:900, qty:40},
-    {name:"चकरी फूल", rate:900, qty:150},
-    {name:"बड़ी इलायची", rate:2500, qty:100},
-    {name:"इलायची (2)", rate:4600, qty:30},
-    {name:"सौंफ", rate:250, qty:300},
-    {name:"आंको धनिया", rate:220, qty:100},
-    {name:"जायफल", rate:1000, qty:100},
-    {name:"जावित्री", rate:3600, qty:50},
-    {name:"दालचीनी (2)", rate:560, qty:150}
-  ];
-
-  function getMasalaMasterData() {
-    let saved=[];
-    try { saved=JSON.parse(localStorage.getItem(MASALA_KEY)||"[]"); } catch(e) { saved=[]; }
-    const hasRealData = Array.isArray(saved) && saved.some(x => x && String(x.name||"").trim() && Number(x.qty)>0);
-    if(!hasRealData) return DEFAULT_MASALA_MASTER.map(x => ({...x}));
-    return saved;
-  }
-
-  function renderMasalaRows() {
-    const saved = getMasalaMasterData();
-    const box = document.getElementById("masalaRows");
-    box.innerHTML = "";
-    for (let i = 0; i < DEFAULT_MASALA_ROWS; i++) {
-      const item = saved[i] || {};
-      box.innerHTML += `<div class="masala-row">
-        <input class="m-name" placeholder="Masala ${i+1}" value="${escapeHtml(item.name || "")}">
-        <input class="m-rate" type="number" min="0" step="0.01" placeholder="Rate" value="${item.rate ?? ""}" oninput="calculateMasala()">
-        <input class="m-qty" type="number" min="0" step="1" placeholder="Gram" value="${item.qty ?? ""}" oninput="calculateMasala()">
-      </div>`;
-    }
-    calculateMasala();
-  }
-
-  function escapeHtml(v){ return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-
-  function calculateMasala() {
-    let weight=0, cost=0;
-    document.querySelectorAll(".masala-row").forEach(row => {
-      const rate=Number(row.querySelector(".m-rate").value)||0;
-      const qty=Number(row.querySelector(".m-qty").value)||0; // direct grams
-      weight += qty;
-      cost += rate*(qty/1000);
-    });
-    const perKg = weight ? cost/(weight/1000) : 0;
-    const cost130 = perKg*(130/1000);
-    document.getElementById("batchWeight").innerText = weight.toFixed(0)+" Gram ("+(weight/1000).toFixed(3)+" KG)";
-    document.getElementById("batchCost").innerText = "₹"+cost.toFixed(2);
-    document.getElementById("perKgMasala").innerText = "₹"+perKg.toFixed(2);
-    document.getElementById("cost130g").innerText = "₹"+cost130.toFixed(2);
-  }
-
-  function saveMasalaMaster() {
-    const data=[];
-    document.querySelectorAll(".masala-row").forEach(row => {
-      data.push({name:row.querySelector(".m-name").value.trim(), rate:Number(row.querySelector(".m-rate").value)||0, qty:Number(row.querySelector(".m-qty").value)||0});
-    });
-    localStorage.setItem(MASALA_KEY, JSON.stringify(data));
-    calculateMasala();
-    alert("Masala Master Successfully Saved!");
-  }
-
-  const RICE_PURCHASE_KEY = "a1RicePurchases";
+  const RICE_KEY = "a1RicePurchases";
+  const OIL_KEY = "a1OilPurchases";
+  const CHICKEN_KEY = "a1ChickenPurchases";
   const PRODUCTION_KEY = "a1ProductionHistory";
-  const OIL_PURCHASE_KEY = "a1OilPurchases";
-  const CHICKEN_PURCHASE_KEY = "a1ChickenPurchases";
+  const MASALA_KEY = "a1MasalaMaster";
   const MASALA_BATCH_KEY = "a1MasalaBatches";
 
-  function getRicePurchases(){try{return JSON.parse(localStorage.getItem(RICE_PURCHASE_KEY)||"[]")}catch(e){return []}}
-  function getOilPurchases(){try{return JSON.parse(localStorage.getItem(OIL_PURCHASE_KEY)||"[]")}catch(e){return []}}
-  function getChickenPurchases(){try{return JSON.parse(localStorage.getItem(CHICKEN_PURCHASE_KEY)||"[]")}catch(e){return []}}
-  function getMasalaBatches(){try{return JSON.parse(localStorage.getItem(MASALA_BATCH_KEY)||"[]")}catch(e){return []}}
-  function saveMasalaBatches(v){localStorage.setItem(MASALA_BATCH_KEY,JSON.stringify(v))}
-
-  function getRiceStock(){return getRicePurchases().reduce((a,x)=>a+(Number(x.qty)||0),0)-getProductionHistory().reduce((a,x)=>a+(Number(x.rice)||0),0)}
-  function getOilStock(){return getOilPurchases().reduce((a,x)=>a+(Number(x.qty)||0),0)-getProductionHistory().reduce((a,x)=>a+(Number(x.oilKg)||0),0)}
-  function getChickenStock(){return getChickenPurchases().reduce((a,x)=>a+(Number(x.qty)||0),0)-getProductionHistory().reduce((a,x)=>a+(Number(x.chickenQty)||0),0)}
-
-  function getMasalaStock(){
-    return getMasalaBatches().reduce((a,x)=>a+(Number(x.remainingQty ?? x.qty)||0),0);
-  }
-
-  function getMasalaStockRate(){
-    const batches=getMasalaBatches();
-    let qty=0,cost=0;
-    batches.forEach(x=>{
-      const q=Number(x.remainingQty ?? x.qty)||0;
-      qty+=q;
-      cost+=q*(Number(x.rate)||0);
-    });
-    return qty?cost/qty:0;
-  }
-
-  function formatRiceStock(){
-    const s=getRiceStock();
-    document.getElementById("riceStock").innerText=s.toFixed(3)+" KG";
-    document.getElementById("dashRiceStock").innerText=s.toFixed(3)+" KG";
-    updateRicePreview();
-  }
-
-  function formatOilStock(){
-    const s=getOilStock();
-    document.getElementById("oilStock").innerText=s.toFixed(3)+" KG";
-    document.getElementById("dashOilStock").innerText=s.toFixed(3)+" KG";
-    updateOilPreview();
-  }
-
-  function formatChickenStock(){
-    const s=getChickenStock();
-    document.getElementById("chickenStock").innerText=s.toFixed(3)+" KG";
-    document.getElementById("dashChickenStock").innerText=s.toFixed(3)+" KG";
-    updateChickenPreview();
-  }
-
-  function formatMasalaStock(){
-    const s=getMasalaStock();
-    const el=document.getElementById("masalaStock");
-    if(el) el.innerText=s.toFixed(3)+" KG";
-    const dm=document.getElementById("dashMasalaStock");
-    if(dm) dm.innerText=s.toFixed(3)+" KG";
-    updateMasalaPreview();
-  }
-
-  function updateRicePreview(){
-    const q=Number(document.getElementById("riceQty").value)||0;
-    const r=Number(document.getElementById("riceRate").value)||0;
-    document.getElementById("ricePurchaseCost").innerText="₹"+(q*r).toFixed(2);
-    document.getElementById("riceAfterStock").innerText=(getRiceStock()+q).toFixed(3)+" KG";
-  }
-
-  function updateOilPreview(){
-    const q=Number(document.getElementById("oilQty").value)||0;
-    const r=Number(document.getElementById("oilRate").value)||0;
-    document.getElementById("oilPurchaseCost").innerText="₹"+(q*r).toFixed(2);
-    document.getElementById("oilAfterStock").innerText=(getOilStock()+q).toFixed(3)+" KG";
-  }
-
-  function updateChickenPreview(){
-    const q=Number(document.getElementById("chickenQty").value)||0;
-    const r=Number(document.getElementById("chickenRate").value)||0;
-    document.getElementById("chickenPurchaseCost").innerText="₹"+(q*r).toFixed(2);
-    document.getElementById("chickenAfterStock").innerText=(getChickenStock()+q).toFixed(3)+" KG";
-  }
-
-  function updateMasalaPreview(){
-    const weight=document.getElementById("batchWeight");
-    const cost=document.getElementById("batchCost");
-    const rate=document.getElementById("perKgMasala");
-    const after=document.getElementById("masalaAfterStock");
-
-    if(weight && cost && rate && after){
-      const master=getMasalaMasterData();
-      let w=0,c=0;
-
-      master.forEach(x=>{
-        const q=Number(x.qty)||0;
-        const r=Number(x.rate)||0;
-        w+=q;
-        c+=q/1000*r;
-      });
-
-      const kg=w/1000;
-      const r=kg?c/kg:0;
-
-      weight.innerText=w.toFixed(0)+" Gram ("+kg.toFixed(3)+" KG)";
-      cost.innerText="₹"+c.toFixed(2);
-      rate.innerText="₹"+r.toFixed(2);
-      after.innerText=(getMasalaStock()+kg).toFixed(3)+" KG";
-    }
-  }
-
-  function saveRicePurchase(){
-    const qty=Number(document.getElementById("riceQty").value)||0;
-    const rate=Number(document.getElementById("riceRate").value)||0;
-
-    if(qty<=0){alert("कृपया Rice Quantity सही दर्ज करें");return;}
-    if(rate<=0){alert("कृपया Rice Rate सही दर्ज करें");return;}
-
-    const h=getRicePurchases();
-    h.push({
-      date:getLocalDateISO(),
-      qty,
-      rate,
-      cost:qty*rate,
-      savedAt:new Date().toISOString()
-    });
-
-    localStorage.setItem(RICE_PURCHASE_KEY,JSON.stringify(h));
-
-    document.getElementById("riceQty").value="";
-    document.getElementById("riceRate").value="";
-
-    formatRiceStock();
-    renderRiceHistory();
-    alert("Rice Purchase Successfully Saved!");
-  }
-
-  function saveOilPurchase(){
-    const qty=Number(document.getElementById("oilQty").value)||0;
-    const rate=Number(document.getElementById("oilRate").value)||0;
-
-    if(qty<=0){alert("कृपया Oil Quantity सही दर्ज करें");return;}
-    if(rate<=0){alert("कृपया Oil Rate सही दर्ज करें");return;}
-
-    const h=getOilPurchases();
-    h.push({
-      date:getLocalDateISO(),
-      qty,
-      rate,
-      cost:qty*rate,
-      savedAt:new Date().toISOString()
-    });
-
-    localStorage.setItem(OIL_PURCHASE_KEY,JSON.stringify(h));
-
-    document.getElementById("oilQty").value="";
-    document.getElementById("oilRate").value="";
-
-    formatOilStock();
-    renderOilHistory();
-    alert("Oil Purchase Successfully Saved!");
-  }
-
-  function saveChickenPurchase(){
-    const qty=Number(document.getElementById("chickenQty").value)||0;
-    const rate=Number(document.getElementById("chickenRate").value)||0;
-
-    if(qty<=0){alert("कृपया Chicken Quantity सही दर्ज करें");return;}
-    if(rate<=0){alert("कृपया Chicken Rate सही दर्ज करें");return;}
-
-    const h=getChickenPurchases();
-    h.push({
-      date:getLocalDateISO(),
-      qty,
-      rate,
-      cost:qty*rate,
-      savedAt:new Date().toISOString()
-    });
-
-    localStorage.setItem(CHICKEN_PURCHASE_KEY,JSON.stringify(h));
-
-    document.getElementById("chickenQty").value="";
-    document.getElementById("chickenRate").value="";
-
-    formatChickenStock();
-    renderChickenHistory();
-    alert("Chicken Purchase Successfully Saved!");
-  }
-      </div>
-  </div>
-
-<script>
-
-  const MASALA_KEY = "a1MasalaMaster";
-  const DEFAULT_MASALA_ROWS = 25;
-
-  // Initial 25-spice recipe from the approved list. These are only starter values;
-  // all names, rates and quantities remain fully editable in Masala Master.
-  const DEFAULT_MASALA_MASTER = [
-    {name:"लौंग मिर्च", rate:450, qty:1800},
-    {name:"अमचूर पाउडर", rate:300, qty:700},
-    {name:"सोंठ पाउडर", rate:800, qty:150},
-    {name:"अजीना मीठा", rate:160, qty:800},
-    {name:"काला नमक", rate:35, qty:2000},
-    {name:"सेंधा नमक", rate:45, qty:2000},
-    {name:"टाटा नमक", rate:30, qty:2000},
-    {name:"नींबू सत", rate:200, qty:200},
-    {name:"खस-खस", rate:1500, qty:250},
-    {name:"दालचीनी (1)", rate:560, qty:100},
-    {name:"इलायची (1)", rate:4600, qty:50},
-    {name:"खुश्कू मसाला", rate:2500, qty:230},
-    {name:"स्टोन फ्लावर", rate:1000, qty:50},
-    {name:"जीरा", rate:300, qty:300},
-    {name:"शाही जीरा अफगानी", rate:1200, qty:150},
-    {name:"काली मिर्च", rate:850, qty:100},
-    {name:"लौंग", rate:900, qty:40},
-    {name:"चकरी फूल", rate:900, qty:150},
-    {name:"बड़ी इलायची", rate:2500, qty:100},
-    {name:"इलायची (2)", rate:4600, qty:30},
-    {name:"सौंफ", rate:250, qty:300},
-    {name:"आंको धनिया", rate:220, qty:100},
-    {name:"जायफल", rate:1000, qty:100},
-    {name:"जावित्री", rate:3600, qty:50},
-    {name:"दालचीनी (2)", rate:560, qty:150}
+  const DEFAULT_MASALA = [
+    ["लाल मिर्च",0,0],
+    ["धनिया",0,0],
+    ["हल्दी",0,0],
+    ["जीरा",0,0],
+    ["काली मिर्च",0,0],
+    ["इलायची",0,0],
+    ["दालचीनी",0,0],
+    ["लौंग",0,0],
+    ["तेज पत्ता",0,0],
+    ["जावित्री",0,0],
+    ["जायफल",0,0],
+    ["बड़ी इलायची",0,0],
+    ["शाही जीरा",0,0],
+    ["सौंफ",0,0],
+    ["अजवाइन",0,0],
+    ["कसूरी मेथी",0,0],
+    ["अमचूर",0,0],
+    ["गरम मसाला",0,0],
+    ["चाट मसाला",0,0],
+    ["हींग",0,0],
+    ["कश्मीरी मिर्च",0,0],
+    ["सोंठ",0,0],
+    ["कबाब चीनी",0,0],
+    ["बिरयानी मसाला",0,0],
+    ["नमक",0,0]
   ];
 
-  function getMasalaMasterData() {
-    let saved=[];
-    try { saved=JSON.parse(localStorage.getItem(MASALA_KEY)||"[]"); } catch(e) { saved=[]; }
-    const hasRealData = Array.isArray(saved) && saved.some(x => x && String(x.name||"").trim() && Number(x.qty)>0);
-    if(!hasRealData) return DEFAULT_MASALA_MASTER.map(x => ({...x}));
-    return saved;
+  function money(n){
+    return "₹" + Number(n || 0).toFixed(2);
   }
 
-  function renderMasalaRows() {
-    const saved = getMasalaMasterData();
-    const box = document.getElementById("masalaRows");
-    box.innerHTML = "";
+  function getLocalDateISO(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
 
-    for (let i = 0; i < DEFAULT_MASALA_ROWS; i++) {
-      const item = saved[i] || {};
-
-      box.innerHTML += `<div class="masala-row">
-        <input class="m-name" placeholder="Masala ${i+1}" value="${escapeHtml(item.name || "")}">
-        <input class="m-rate" type="number" min="0" step="0.01" placeholder="Rate" value="${item.rate ?? ""}" oninput="calculateMasala()">
-        <input class="m-qty" type="number" min="0" step="1" placeholder="Gram" value="${item.qty ?? ""}" oninput="calculateMasala()">
-      </div>`;
+  function safeJSON(key, fallback=[]){
+    try{
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    }catch(e){
+      return fallback;
     }
-
-    calculateMasala();
   }
-
-  function escapeHtml(v){
-    return String(v)
-      .replace(/&/g,"&amp;")
-      .replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;")
-      .replace(/"/g,"&quot;");
-  }
-
-  function calculateMasala() {
-    let weight=0, cost=0;
-
-    document.querySelectorAll(".masala-row").forEach(row => {
-      const rate=Number(row.querySelector(".m-rate").value)||0;
-      const qty=Number(row.querySelector(".m-qty").value)||0; // direct grams
-
-      weight += qty;
-      cost += rate*(qty/1000);
-    });
-
-    const perKg = weight ? cost/(weight/1000) : 0;
-    const cost130 = perKg*(130/1000);
-
-    document.getElementById("batchWeight").innerText =
-      weight.toFixed(0)+" Gram ("+(weight/1000).toFixed(3)+" KG)";
-
-    document.getElementById("batchCost").innerText =
-      "₹"+cost.toFixed(2);
-
-    document.getElementById("perKgMasala").innerText =
-      "₹"+perKg.toFixed(2);
-
-    document.getElementById("cost130g").innerText =
-      "₹"+cost130.toFixed(2);
-  }
-
-  function saveMasalaMaster() {
-    const data=[];
-
-    document.querySelectorAll(".masala-row").forEach(row => {
-      data.push({
-        name:row.querySelector(".m-name").value.trim(),
-        rate:Number(row.querySelector(".m-rate").value)||0,
-        qty:Number(row.querySelector(".m-qty").value)||0
-      });
-    });
-
-    localStorage.setItem(MASALA_KEY, JSON.stringify(data));
-
-    calculateMasala();
-    alert("Masala Master Successfully Saved!");
-  }
-
-  const RICE_PURCHASE_KEY = "a1RicePurchases";
-  const PRODUCTION_KEY = "a1ProductionHistory";
-  const OIL_PURCHASE_KEY = "a1OilPurchases";
-  const CHICKEN_PURCHASE_KEY = "a1ChickenPurchases";
-  const MASALA_BATCH_KEY = "a1MasalaBatches";
 
   function getRicePurchases(){
-    try{
-      return JSON.parse(localStorage.getItem(RICE_PURCHASE_KEY)||"[]")
-    }catch(e){
-      return []
-    }
+    return safeJSON(RICE_KEY, []);
   }
 
   function getOilPurchases(){
-    try{
-      return JSON.parse(localStorage.getItem(OIL_PURCHASE_KEY)||"[]")
-    }catch(e){
-      return []
-    }
+    return safeJSON(OIL_KEY, []);
   }
 
   function getChickenPurchases(){
-    try{
-      return JSON.parse(localStorage.getItem(CHICKEN_PURCHASE_KEY)||"[]")
-    }catch(e){
-      return []
-    }
+    return safeJSON(CHICKEN_KEY, []);
+  }
+
+  function getProductionHistory(){
+    return safeJSON(PRODUCTION_KEY, []);
+  }
+
+  function getMasalaMaster(){
+    const saved = safeJSON(MASALA_KEY, []);
+    return Array.isArray(saved) && saved.length ? saved : DEFAULT_MASALA.map(x => ({
+      name:x[0],
+      rate:Number(x[1]) || 0,
+      gram:Number(x[2]) || 0
+    }));
+  }
+
+  function saveMasalaMasterData(data){
+    localStorage.setItem(MASALA_KEY, JSON.stringify(data));
   }
 
   function getMasalaBatches(){
-    try{
-      return JSON.parse(localStorage.getItem(MASALA_BATCH_KEY)||"[]")
-    }catch(e){
-      return []
-    }
+    return safeJSON(MASALA_BATCH_KEY, []);
   }
 
-  function saveMasalaBatches(v){
-    localStorage.setItem(MASALA_BATCH_KEY,JSON.stringify(v))
+  function saveMasalaBatches(data){
+    localStorage.setItem(MASALA_BATCH_KEY, JSON.stringify(data));
   }
 
   function getRiceStock(){
-    return getRicePurchases().reduce((a,x)=>a+(Number(x.qty)||0),0)
-      -getProductionHistory().reduce((a,x)=>a+(Number(x.rice)||0),0)
+    return getRicePurchases().reduce((sum,x)=>{
+      return sum + (Number(x.qty) || 0);
+    },0) - getProductionHistory().reduce((sum,x)=>{
+      return sum + (Number(x.rice) || 0);
+    },0);
   }
 
   function getOilStock(){
-    return getOilPurchases().reduce((a,x)=>a+(Number(x.qty)||0),0)
-      -getProductionHistory().reduce((a,x)=>a+(Number(x.oilKg)||0),0)
+    return getOilPurchases().reduce((sum,x)=>{
+      return sum + (Number(x.qty) || 0);
+    },0) - getProductionHistory().reduce((sum,x)=>{
+      return sum + (Number(x.oilKg) || 0);
+    },0);
   }
 
   function getChickenStock(){
-    return getChickenPurchases().reduce((a,x)=>a+(Number(x.qty)||0),0)
-      -getProductionHistory().reduce((a,x)=>a+(Number(x.chickenQty)||0),0)
+    return getChickenPurchases().reduce((sum,x)=>{
+      return sum + (Number(x.qty) || 0);
+    },0) - getProductionHistory().reduce((sum,x)=>{
+      return sum + (Number(x.chickenQty) || 0);
+    },0);
   }
 
   function getMasalaStock(){
-    return getMasalaBatches().reduce(
-      (a,x)=>a+(Number(x.remainingQty ?? x.qty)||0),0
-    );
+    const batches = getMasalaBatches();
+
+    if(batches.length){
+      return batches.reduce((sum,x)=>{
+        return sum + (Number(x.remainingQty) || 0);
+      },0);
+    }
+
+    const master = getMasalaMaster();
+    return master.reduce((sum,x)=>{
+      return sum + ((Number(x.gram) || 0) / 1000);
+    },0);
   }
 
   function getMasalaStockRate(){
-    const batches=getMasalaBatches();
-    let qty=0,cost=0;
+    const batches = getMasalaBatches();
 
-    batches.forEach(x=>{
-      const q=Number(x.remainingQty ?? x.qty)||0;
-      qty+=q;
-      cost+=q*(Number(x.rate)||0);
+    if(batches.length){
+      let qty = 0;
+      let cost = 0;
+
+      batches.forEach(x=>{
+        const q = Number(x.remainingQty) || 0;
+        const r = Number(x.rate) || 0;
+        qty += q;
+        cost += q * r;
+      });
+
+      return qty > 0 ? cost / qty : 0;
+    }
+
+    const master = getMasalaMaster();
+    let gram = 0;
+    let cost = 0;
+
+    master.forEach(x=>{
+      const g = Number(x.gram) || 0;
+      const r = Number(x.rate) || 0;
+      gram += g;
+      cost += (g / 1000) * r;
     });
 
-    return qty?cost/qty:0;
+    return gram > 0 ? cost / (gram / 1000) : 0;
+  }
+
+  function getMasalaMasterTotals(){
+    const master = getMasalaMaster();
+    let gram = 0;
+    let cost = 0;
+
+    master.forEach(x=>{
+      const g = Number(x.gram) || 0;
+      const r = Number(x.rate) || 0;
+      gram += g;
+      cost += (g / 1000) * r;
+    });
+
+    return {
+      gram,
+      kg:gram / 1000,
+      cost
+    };
+  }
+
+  function updateMasalaSummary(){
+    const t = getMasalaMasterTotals();
+
+    const batchWeight = document.getElementById("batchWeight");
+    const batchCost = document.getElementById("batchCost");
+    const perKg = document.getElementById("perKgMasala");
+    const cost130 = document.getElementById("cost130g");
+
+    if(batchWeight) batchWeight.innerText = t.kg.toFixed(3) + " KG";
+    if(batchCost) batchCost.innerText = money(t.cost);
+    if(perKg) perKg.innerText = money(t.kg > 0 ? t.cost / t.kg : 0);
+    if(cost130) cost130.innerText = money(t.kg > 0 ? (t.cost / t.kg) * 0.130 : 0);
+  }
+
+  function openSettings(){
+    hideAllPages();
+    document.getElementById("settingsPage").style.display="block";
+    setActiveNav("navSettings");
+  }
+
+  function openDataManager(){
+    hideAllPages();
+    document.getElementById("dataManagerPage").style.display="block";
+    setActiveNav("navSettings");
+    renderDataManager("sales");
+  }
+
+  function openMasalaMaster(){
+    hideAllPages();
+    document.getElementById("masalaPage").style.display="block";
+    setActiveNav("navSettings");
+    renderMasalaRows();
+    renderMasalaMasterHistory();
+  }
+
+  function openStock(){
+    hideAllPages();
+    document.getElementById("stockPage").style.display="block";
+    setActiveNav("navStock");
+
+    formatRiceStock();
+    formatOilStock();
+    formatChickenStock();
+
+    updateRicePreview();
+    updateOilPreview();
+    updateChickenPreview();
+
+    renderRiceHistory();
+    renderOilHistory();
+    renderChickenHistory();
+  }
+
+  function hideAllPages(){
+    [
+      "settingsPage",
+      "masalaPage",
+      "dataManagerPage",
+      "stockPage",
+      "historyPage",
+      "productionPage",
+      "salesPage",
+      "reportsPage",
+      "staffExpensePage",
+      "entryMenuPage"
+    ].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.style.display="none";
+    });
+
+    const dashboard = document.querySelector(".container:not(.settings-page):not(.stock-page):not(.history-page):not(.reports-page)");
+    if(dashboard) dashboard.style.display="none";
+  }
+
+  function setActiveNav(active){
+    ["navDashboard","navStock","navEntry","navReports","navSettings"].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.classList.toggle("active",id===active);
+    });
   }
 
   function formatRiceStock(){
-    const s=getRiceStock();
+    const el=document.getElementById("riceStock");
+    if(el) el.innerText=getRiceStock().toFixed(3)+" KG";
 
-    document.getElementById("riceStock").innerText =
-      s.toFixed(3)+" KG";
-
-    document.getElementById("dashRiceStock").innerText =
-      s.toFixed(3)+" KG";
-
-    updateRicePreview();
+    const dash=document.getElementById("dashRiceStock");
+    if(dash) dash.innerText=getRiceStock().toFixed(3)+" KG";
   }
 
   function formatOilStock(){
-    const s=getOilStock();
+    const el=document.getElementById("oilStock");
+    if(el) el.innerText=getOilStock().toFixed(3)+" KG";
 
-    document.getElementById("oilStock").innerText =
-      s.toFixed(3)+" KG";
-
-    document.getElementById("dashOilStock").innerText =
-      s.toFixed(3)+" KG";
-
-    updateOilPreview();
+    const dash=document.getElementById("dashOilStock");
+    if(dash) dash.innerText=getOilStock().toFixed(3)+" KG";
   }
 
   function formatChickenStock(){
-    const s=getChickenStock();
+    const el=document.getElementById("chickenStock");
+    if(el) el.innerText=getChickenStock().toFixed(3)+" KG";
 
-    document.getElementById("chickenStock").innerText =
-      s.toFixed(3)+" KG";
-
-    document.getElementById("dashChickenStock").innerText =
-      s.toFixed(3)+" KG";
-
-    updateChickenPreview();
+    const dash=document.getElementById("dashChickenStock");
+    if(dash) dash.innerText=getChickenStock().toFixed(3)+" KG";
   }
 
   function formatMasalaStock(){
-    const s=getMasalaStock();
+    const el=document.getElementById("dashMasalaStock");
+    if(el) el.innerText=getMasalaStock().toFixed(3)+" KG";
+  }
 
-    const el=document.getElementById("masalaStock");
-    if(el) el.innerText=s.toFixed(3)+" KG";
+  function renderMasalaRows(){
+    const box=document.getElementById("masalaRows");
+    if(!box) return;
 
-    const dm=document.getElementById("dashMasalaStock");
-    if(dm) dm.innerText=s.toFixed(3)+" KG";
+    const master=getMasalaMaster();
 
-    updateMasalaPreview();
+    box.innerHTML=master.map((x,i)=>`
+      <div class="masala-row">
+        <input value="${x.name || ""}" data-masala-name="${i}">
+        <input type="number" min="0" step="0.01" value="${Number(x.rate)||0}" data-masala-rate="${i}">
+        <input type="number" min="0" step="0.01" value="${Number(x.gram)||0}" data-masala-gram="${i}">
+      </div>
+    `).join("");
+
+    updateMasalaSummary();
+  }
+
+  function saveMasalaMaster(){
+    const rows=document.querySelectorAll("#masalaRows .masala-row");
+    const master=[];
+
+    rows.forEach((row,i)=>{
+      const name=row.querySelector(`[data-masala-name="${i}"]`);
+      const rate=row.querySelector(`[data-masala-rate="${i}"]`);
+      const gram=row.querySelector(`[data-masala-gram="${i}"]`);
+
+      master.push({
+        name:name ? name.value.trim() : "",
+        rate:Number(rate ? rate.value : 0) || 0,
+        gram:Number(gram ? gram.value : 0) || 0
+      });
+    });
+
+    saveMasalaMasterData(master);
+
+    const total=getMasalaMasterTotals();
+
+    const batch={
+      id:Date.now(),
+      date:getLocalDateISO(),
+      qty:total.kg,
+      remainingQty:total.kg,
+      rate:total.kg > 0 ? total.cost / total.kg : 0,
+      cost:total.cost,
+      savedAt:new Date().toISOString()
+    };
+
+    const batches=getMasalaBatches();
+    batches.push(batch);
+    saveMasalaBatches(batches);
+
+    updateMasalaSummary();
+    renderMasalaMasterHistory();
+    formatMasalaStock();
+
+    alert("Masala Master Successfully Saved!");
+  }
+
+  function renderMasalaMasterHistory(){
+    const box=document.getElementById("masalaMasterHistory");
+    if(!box) return;
+
+    const batches=getMasalaBatches()
+      .slice()
+      .reverse()
+      .slice(0,5);
+
+    if(!batches.length){
+      box.innerHTML='<div class="empty-history">अभी कोई Masala Batch record नहीं है।</div>';
+      return;
+    }
+
+    box.innerHTML=batches.map(x=>`
+      <div class="history-item">
+        <div>
+          <b>${x.date || ""}</b>
+          <span>${Number(x.qty||0).toFixed(3)} KG Masala</span>
+        </div>
+        <div style="text-align:right;">
+          <b>${money(x.cost)}</b>
+          <span>Batch Cost</span>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function openMasalaMasterHistory(){
+    alert("Masala Master history नीचे latest records में दिखाई जा रही है।");
   }
 
   function updateRicePreview(){
-    const q=Number(document.getElementById("riceQty").value)||0;
-    const r=Number(document.getElementById("riceRate").value)||0;
+    const qty=Number(document.getElementById("riceQty")?.value)||0;
+    const rate=Number(document.getElementById("riceRate")?.value)||0;
 
-    document.getElementById("ricePurchaseCost").innerText =
-      "₹"+(q*r).toFixed(2);
+    const cost=qty*rate;
+    const stock=getRiceStock()+qty;
 
-    document.getElementById("riceAfterStock").innerText =
-      (getRiceStock()+q).toFixed(3)+" KG";
+    const costEl=document.getElementById("ricePurchaseCost");
+    const stockEl=document.getElementById("riceAfterStock");
+
+    if(costEl) costEl.innerText=money(cost);
+    if(stockEl) stockEl.innerText=stock.toFixed(3)+" KG";
   }
 
   function updateOilPreview(){
-    const q=Number(document.getElementById("oilQty").value)||0;
-    const r=Number(document.getElementById("oilRate").value)||0;
+    const qty=Number(document.getElementById("oilQty")?.value)||0;
+    const rate=Number(document.getElementById("oilRate")?.value)||0;
 
-    document.getElementById("oilPurchaseCost").innerText =
-      "₹"+(q*r).toFixed(2);
+    const cost=qty*rate;
+    const stock=getOilStock()+qty;
 
-    document.getElementById("oilAfterStock").innerText =
-      (getOilStock()+q).toFixed(3)+" KG";
+    const costEl=document.getElementById("oilPurchaseCost");
+    const stockEl=document.getElementById("oilAfterStock");
+
+    if(costEl) costEl.innerText=money(cost);
+    if(stockEl) stockEl.innerText=stock.toFixed(3)+" KG";
   }
 
   function updateChickenPreview(){
-    const q=Number(document.getElementById("chickenQty").value)||0;
-    const r=Number(document.getElementById("chickenRate").value)||0;
+    const qty=Number(document.getElementById("chickenQty")?.value)||0;
+    const rate=Number(document.getElementById("chickenRate")?.value)||0;
 
-    document.getElementById("chickenPurchaseCost").innerText =
-      "₹"+(q*r).toFixed(2);
+    const cost=qty*rate;
+    const stock=getChickenStock()+qty;
 
-    document.getElementById("chickenAfterStock").innerText =
-      (getChickenStock()+q).toFixed(3)+" KG";
-  }
+    const costEl=document.getElementById("chickenPurchaseCost");
+    const stockEl=document.getElementById("chickenAfterStock");
 
-  function updateMasalaPreview(){
-    const weight=document.getElementById("batchWeight");
-    const cost=document.getElementById("batchCost");
-    const rate=document.getElementById("perKgMasala");
-    const after=document.getElementById("masalaAfterStock");
-
-    if(weight && cost && rate && after){
-      const master=getMasalaMasterData();
-
-      let w=0,c=0;
-
-      master.forEach(x=>{
-        const q=Number(x.qty)||0;
-        const r=Number(x.rate)||0;
-
-        w+=q;
-        c+=q/1000*r;
-      });
-
-      const kg=w/1000;
-      const r=kg?c/kg:0;
-
-      weight.innerText =
-        w.toFixed(0)+" Gram ("+kg.toFixed(3)+" KG)";
-
-      cost.innerText =
-        "₹"+c.toFixed(2);
-
-      rate.innerText =
-        "₹"+r.toFixed(2);
-
-      after.innerText =
-        (getMasalaStock()+kg).toFixed(3)+" KG";
-    }
+    if(costEl) costEl.innerText=money(cost);
+    if(stockEl) stockEl.innerText=stock.toFixed(3)+" KG";
   }
 
   function saveRicePurchase(){
@@ -1190,7 +1181,7 @@
       return;
     }
 
-    if(rate<=0){
+    if(rate<0){
       alert("कृपया Rice Rate सही दर्ज करें");
       return;
     }
@@ -1198,6 +1189,7 @@
     const h=getRicePurchases();
 
     h.push({
+      id:Date.now(),
       date:getLocalDateISO(),
       qty,
       rate,
@@ -1205,13 +1197,15 @@
       savedAt:new Date().toISOString()
     });
 
-    localStorage.setItem(RICE_PURCHASE_KEY,JSON.stringify(h));
+    localStorage.setItem(RICE_KEY,JSON.stringify(h));
 
     document.getElementById("riceQty").value="";
     document.getElementById("riceRate").value="";
 
+    updateRicePreview();
     formatRiceStock();
     renderRiceHistory();
+    refreshDashboard();
 
     alert("Rice Purchase Successfully Saved!");
   }
@@ -1225,7 +1219,7 @@
       return;
     }
 
-    if(rate<=0){
+    if(rate<0){
       alert("कृपया Oil Rate सही दर्ज करें");
       return;
     }
@@ -1233,6 +1227,7 @@
     const h=getOilPurchases();
 
     h.push({
+      id:Date.now(),
       date:getLocalDateISO(),
       qty,
       rate,
@@ -1240,13 +1235,15 @@
       savedAt:new Date().toISOString()
     });
 
-    localStorage.setItem(OIL_PURCHASE_KEY,JSON.stringify(h));
+    localStorage.setItem(OIL_KEY,JSON.stringify(h));
 
     document.getElementById("oilQty").value="";
     document.getElementById("oilRate").value="";
 
+    updateOilPreview();
     formatOilStock();
     renderOilHistory();
+    refreshDashboard();
 
     alert("Oil Purchase Successfully Saved!");
   }
@@ -1260,7 +1257,7 @@
       return;
     }
 
-    if(rate<=0){
+    if(rate<0){
       alert("कृपया Chicken Rate सही दर्ज करें");
       return;
     }
@@ -1268,6 +1265,7 @@
     const h=getChickenPurchases();
 
     h.push({
+      id:Date.now(),
       date:getLocalDateISO(),
       qty,
       rate,
@@ -1275,923 +1273,1354 @@
       savedAt:new Date().toISOString()
     });
 
-    localStorage.setItem(CHICKEN_PURCHASE_KEY,JSON.stringify(h));
+    localStorage.setItem(CHICKEN_KEY,JSON.stringify(h));
 
     document.getElementById("chickenQty").value="";
     document.getElementById("chickenRate").value="";
 
+    updateChickenPreview();
     formatChickenStock();
     renderChickenHistory();
+    refreshDashboard();
 
     alert("Chicken Purchase Successfully Saved!");
   }
-    function formatChickenStock(){
-    const stock = getChickenStock();
-    const el = document.getElementById("chickenStock");
-    if(el) el.innerText = stock.toFixed(3) + " KG";
+
+  function renderRiceHistory(){
+    const box=document.getElementById("riceHistory");
+    if(!box) return;
+
+    const h=getRicePurchases().slice().reverse().slice(0,5);
+
+    box.innerHTML=h.length
+      ? h.map(x=>`
+        <div class="history-item">
+          <div><b>${x.date}</b><span>${Number(x.qty).toFixed(3)} KG × ₹${Number(x.rate).toFixed(2)}/KG</span></div>
+          <div><b>${money(x.cost)}</b></div>
+        </div>
+      `).join("")
+      : '<div class="empty-history">अभी कोई Rice Purchase record नहीं है।</div>';
   }
 
-  function updateChickenPreview(){
-    const qtyEl = document.getElementById("chickenQty");
-    const rateEl = document.getElementById("chickenRate");
-    if(!qtyEl || !rateEl) return;
+  function renderOilHistory(){
+    const box=document.getElementById("oilHistory");
+    if(!box) return;
 
-    const qty = Number(qtyEl.value)||0;
-    const rate = Number(rateEl.value)||0;
-    const cost = qty * rate;
-    const current = getChickenStock();
+    const h=getOilPurchases().slice().reverse().slice(0,5);
 
-    document.getElementById("chickenPurchaseCost").innerText =
-      "₹" + cost.toFixed(2);
-
-    document.getElementById("chickenAfterStock").innerText =
-      (current + qty).toFixed(3) + " KG";
+    box.innerHTML=h.length
+      ? h.map(x=>`
+        <div class="history-item">
+          <div><b>${x.date}</b><span>${Number(x.qty).toFixed(3)} KG × ₹${Number(x.rate).toFixed(2)}/KG</span></div>
+          <div><b>${money(x.cost)}</b></div>
+        </div>
+      `).join("")
+      : '<div class="empty-history">अभी कोई Oil Purchase record नहीं है।</div>';
   }
 
   function renderChickenHistory(){
-    const box = document.getElementById("chickenHistory");
+    const box=document.getElementById("chickenHistory");
     if(!box) return;
 
-    const list = getChickenPurchases();
+    const h=getChickenPurchases().slice().reverse().slice(0,5);
 
-    if(!list.length){
-      box.innerHTML =
-        '<div class="empty-history">अभी कोई Chicken purchase record नहीं है।</div>';
-      return;
-    }
-
-    box.innerHTML = list.slice().reverse().slice(0,1).map(item => `
-      <div class="history-item">
-        <div>
-          <b>${Number(item.qty).toFixed(3)} KG × ₹${Number(item.rate).toFixed(2)}/KG</b>
-          <span>${item.date}</span>
-        </div>
-        <div style="text-align:right;">
-          <b>₹${Number(item.total).toFixed(2)}</b>
-          <span>Purchase</span>
-        </div>
-      </div>
-    `).join("");
-  }
-
-  function saveChickenPurchase(){
-    const qty = Number(document.getElementById("chickenQty").value);
-    const rate = Number(document.getElementById("chickenRate").value);
-
-    if(!qty || qty <= 0 || !rate || rate <= 0){
-      alert("कृपया सही Quantity और Rate दर्ज करें");
-      return;
-    }
-
-    const list = getChickenPurchases();
-    const total = qty * rate;
-    const now = new Date();
-
-    const date =
-      now.toLocaleDateString('en-GB') + ' ' +
-      now.toLocaleTimeString([], {
-        hour:'2-digit',
-        minute:'2-digit'
-      });
-
-    list.push({
-      qty,
-      rate,
-      total,
-      date
-    });
-
-    localStorage.setItem(
-      CHICKEN_PURCHASE_KEY,
-      JSON.stringify(list)
-    );
-
-    document.getElementById("chickenQty").value = "";
-    document.getElementById("chickenRate").value = "";
-
-    formatChickenStock();
-    updateChickenPreview();
-    renderChickenHistory();
-
-    alert("Chicken Purchase Successfully Added!");
-  }
-
-
-  const MASALA_BATCH_KEY = "a1MasalaBatches";
-
-  function getMasalaBatches(){
-    try{
-      return JSON.parse(
-        localStorage.getItem(MASALA_BATCH_KEY) || "[]"
-      );
-    }catch(e){
-      return [];
-    }
-  }
-
-  function saveMasalaBatches(list){
-    localStorage.setItem(
-      MASALA_BATCH_KEY,
-      JSON.stringify(list)
-    );
-  }
-
-  function getMasalaStock(){
-    return getMasalaBatches().reduce(
-      (sum,item) =>
-        sum + Number(
-          item.remainingQty !== undefined
-            ? item.remainingQty
-            : item.qty
-        ) || 0,
-      0
-    );
-  }
-
-  function getMasalaStockRate(){
-    const list = getMasalaBatches();
-
-    let qty = 0;
-    let cost = 0;
-
-    list.forEach(item => {
-      const q = Number(
-        item.remainingQty !== undefined
-          ? item.remainingQty
-          : item.qty
-      ) || 0;
-
-      const r = Number(item.rate) || 0;
-
-      qty += q;
-      cost += q * r;
-    });
-
-    return qty ? cost / qty : 0;
-  }
-
-  function formatMasalaStock(){
-    const stock = getMasalaStock();
-
-    const el = document.getElementById("masalaStock");
-    if(el) el.innerText = stock.toFixed(3) + " KG";
-  }
-
-  function updateMasalaPreview(){
-    const master = getMasalaMasterData();
-
-    let weight = 0;
-    let cost = 0;
-
-    master.forEach(item => {
-      const qty = Number(item.qty) || 0;
-      const rate = Number(item.rate) || 0;
-
-      weight += qty;
-      cost += (qty / 1000) * rate;
-    });
-
-    const kg = weight / 1000;
-    const rate = kg ? cost / kg : 0;
-
-    const weightEl = document.getElementById("readyBatchWeight");
-    const costEl = document.getElementById("readyBatchCost");
-    const rateEl = document.getElementById("readyBatchRate");
-    const afterEl = document.getElementById("masalaAfterStock");
-
-    if(weightEl)
-      weightEl.innerText =
-        weight.toFixed(0) +
-        " Gram (" +
-        kg.toFixed(3) +
-        " KG)";
-
-    if(costEl)
-      costEl.innerText =
-        "₹" + cost.toFixed(2);
-
-    if(rateEl)
-      rateEl.innerText =
-        "₹" + rate.toFixed(2);
-
-    if(afterEl)
-      afterEl.innerText =
-        (getMasalaStock() + kg).toFixed(3) +
-        " KG";
-  }
-
-
-  function createMasalaBatch(){
-    const master = getMasalaMasterData();
-
-    let weight = 0;
-    let cost = 0;
-
-    master.forEach(item => {
-      const qty = Number(item.qty) || 0;
-      const rate = Number(item.rate) || 0;
-
-      weight += qty;
-      cost += (qty / 1000) * rate;
-    });
-
-    const kg = weight / 1000;
-
-    if(kg <= 0){
-      alert("पहले Masala Master में recipe quantity save करें।");
-      return;
-    }
-
-    const rate = cost / kg;
-    const list = getMasalaBatches();
-
-    list.push({
-      date: getLocalDateISO(),
-      qty: kg,
-      remainingQty: kg,
-      cost: cost,
-      rate: rate,
-      savedAt: new Date().toISOString()
-    });
-
-    saveMasalaBatches(list);
-
-    formatMasalaStock();
-    updateMasalaPreview();
-    renderMasalaBatchHistory();
-
-    alert("Masala Batch Successfully Created!");
-  }
-
-
-  function renderMasalaBatchHistory(){
-    const box =
-      document.getElementById("masalaMasterHistory");
-
-    if(!box) return;
-
-    const list = getMasalaBatches();
-
-    if(!list.length){
-      box.innerHTML =
-        '<div class="empty-history">अभी कोई Masala Batch record नहीं है।</div>';
-      return;
-    }
-
-    box.innerHTML =
-      list.slice().reverse().slice(0,3).map(item => `
+    box.innerHTML=h.length
+      ? h.map(x=>`
         <div class="history-item">
-          <div>
-            <b>${Number(item.qty).toFixed(3)} KG</b>
-            <span>${item.date}</span>
-          </div>
-          <div style="text-align:right;">
-            <b>₹${Number(item.cost).toFixed(2)}</b>
-            <span>₹${Number(item.rate).toFixed(2)}/KG</span>
-          </div>
+          <div><b>${x.date}</b><span>${Number(x.qty).toFixed(3)} KG × ₹${Number(x.rate).toFixed(2)}/KG</span></div>
+          <div><b>${money(x.cost)}</b></div>
         </div>
-      `).join("");
+      `).join("")
+      : '<div class="empty-history">अभी कोई Chicken Purchase record नहीं है।</div>';
+  }
+      function openHistoryPage(type){
+    hideAllPages();
+    document.getElementById("historyPage").style.display="block";
+    setActiveNav("navStock");
+
+    showHistoryTab(type);
+    renderFullPurchaseHistory();
   }
 
+  function showHistoryTab(type){
+    const riceBox=document.getElementById("riceHistoryFull");
+    const oilBox=document.getElementById("oilHistoryFull");
+    const chickenBox=document.getElementById("chickenHistoryFull");
+    const masalaBox=document.getElementById("masalaHistoryFull");
 
-  function openMasalaMasterHistory(){
-    openHistoryPage("masala");
+    const riceTab=document.getElementById("riceHistoryTab");
+    const oilTab=document.getElementById("oilHistoryTab");
+    const chickenTab=document.getElementById("chickenHistoryTab");
+    const masalaTab=document.getElementById("masalaHistoryTab");
+
+    if(riceBox) riceBox.style.display=type==="rice" ? "block" : "none";
+    if(oilBox) oilBox.style.display=type==="oil" ? "block" : "none";
+    if(chickenBox) chickenBox.style.display=type==="chicken" ? "block" : "none";
+    if(masalaBox) masalaBox.style.display=type==="masala" ? "block" : "none";
+
+    if(riceTab) riceTab.classList.toggle("active",type==="rice");
+    if(oilTab) oilTab.classList.toggle("active",type==="oil");
+    if(chickenTab) chickenTab.classList.toggle("active",type==="chicken");
+    if(masalaTab) masalaTab.classList.toggle("active",type==="masala");
   }
 
+  function renderFullPurchaseHistory(){
+    const riceBox=document.getElementById("riceHistoryFull");
+    const oilBox=document.getElementById("oilHistoryFull");
+    const chickenBox=document.getElementById("chickenHistoryFull");
+    const masalaBox=document.getElementById("masalaHistoryFull");
 
-  function getLocalDateISO(){
-    const d = new Date();
+    if(riceBox){
+      const h=getRicePurchases().slice().reverse();
 
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,"0");
-    const day = String(d.getDate()).padStart(2,"0");
+      riceBox.innerHTML=h.length
+        ? h.map(x=>`
+          <div class="history-item">
+            <div>
+              <b>${x.date}</b>
+              <span>${Number(x.qty).toFixed(3)} KG × ₹${Number(x.rate).toFixed(2)}/KG</span>
+            </div>
+            <div style="text-align:right;">
+              <b>${money(x.cost)}</b>
+              <button onclick="editPurchase('rice',${x.id})" style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;margin-top:5px;">Edit</button>
+              <button onclick="deletePurchase('rice',${x.id})" style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;margin-top:5px;">Delete</button>
+            </div>
+          </div>
+        `).join("")
+        : '<div class="empty-history">अभी कोई Rice Purchase record नहीं है।</div>';
+    }
 
-    return `${y}-${m}-${day}`;
-  }
+    if(oilBox){
+      const h=getOilPurchases().slice().reverse();
 
+      oilBox.innerHTML=h.length
+        ? h.map(x=>`
+          <div class="history-item">
+            <div>
+              <b>${x.date}</b>
+              <span>${Number(x.qty).toFixed(3)} KG × ₹${Number(x.rate).toFixed(2)}/KG</span>
+            </div>
+            <div style="text-align:right;">
+              <b>${money(x.cost)}</b>
+              <button onclick="editPurchase('oil',${x.id})" style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;margin-top:5px;">Edit</button>
+              <button onclick="deletePurchase('oil',${x.id})" style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;margin-top:5px;">Delete</button>
+            </div>
+          </div>
+        `).join("")
+        : '<div class="empty-history">अभी कोई Oil Purchase record नहीं है।</div>';
+    }
 
-  function getTodayProduction(){
-    const today = getLocalDateISO();
+    if(chickenBox){
+      const h=getChickenPurchases().slice().reverse();
 
-    return getProductionHistory().filter(
-      x => x.date === today
-    );
-  }
+      chickenBox.innerHTML=h.length
+        ? h.map(x=>`
+          <div class="history-item">
+            <div>
+              <b>${x.date}</b>
+              <span>${Number(x.qty).toFixed(3)} KG × ₹${Number(x.rate).toFixed(2)}/KG</span>
+            </div>
+            <div style="text-align:right;">
+              <b>${money(x.cost)}</b>
+              <button onclick="editPurchase('chicken',${x.id})" style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;margin-top:5px;">Edit</button>
+              <button onclick="deletePurchase('chicken',${x.id})" style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;margin-top:5px;">Delete</button>
+            </div>
+          </div>
+        `).join("")
+        : '<div class="empty-history">अभी कोई Chicken Purchase record नहीं है।</div>';
+    }
 
+    if(masalaBox){
+      const h=getMasalaBatches().slice().reverse();
 
-  function getTodaySales(){
-    const today = getLocalDateISO();
-
-    try{
-      const list =
-        JSON.parse(
-          localStorage.getItem("a1SalesHistory") || "[]"
-        );
-
-      return list.filter(
-        x => x.date === today
-      );
-    }catch(e){
-      return [];
+      masalaBox.innerHTML=h.length
+        ? h.map(x=>`
+          <div class="history-item">
+            <div>
+              <b>${x.date}</b>
+              <span>${Number(x.qty||0).toFixed(3)} KG Masala</span>
+            </div>
+            <div style="text-align:right;">
+              <b>${money(x.cost)}</b>
+              <button onclick="editMasalaBatch(${x.id})" style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;margin-top:5px;">Edit</button>
+              <button onclick="deleteMasalaBatch(${x.id})" style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;margin-top:5px;">Delete</button>
+            </div>
+          </div>
+        `).join("")
+        : '<div class="empty-history">अभी कोई Masala Batch record नहीं है।</div>';
     }
   }
 
 
-  function getTodayStaffExpense(){
-    const today = getLocalDateISO();
+  function editPurchase(type,id){
+    let key="";
 
-    try{
-      const list =
-        JSON.parse(
-          localStorage.getItem("a1StaffExpenses") || "[]"
-        );
+    if(type==="rice") key=RICE_KEY;
+    if(type==="oil") key=OIL_KEY;
+    if(type==="chicken") key=CHICKEN_KEY;
 
-      return list.filter(
-        x => x.date === today
-      );
-    }catch(e){
-      return [];
+    if(!key) return;
+
+    const list=safeJSON(key,[]);
+    const index=list.findIndex(x=>Number(x.id)===Number(id));
+
+    if(index===-1){
+      alert("Entry नहीं मिली।");
+      return;
     }
-  }
 
+    const item=list[index];
 
-  function calculateTodaySales(){
-    return getTodaySales().reduce(
-      (sum,x) => sum + (Number(x.amount)||0),
-      0
+    const newQty=prompt(
+      "Quantity (KG) enter करें:",
+      Number(item.qty||0)
     );
-  }
 
+    if(newQty===null) return;
 
-  function calculateTodayStaffExpense(){
-    return getTodayStaffExpense().reduce(
-      (sum,x) => sum + (Number(x.amount)||0),
-      0
+    const qty=Number(newQty);
+
+    if(!Number.isFinite(qty) || qty<0){
+      alert("Quantity सही नहीं है।");
+      return;
+    }
+
+    const newRate=prompt(
+      "Rate ₹/KG enter करें:",
+      Number(item.rate||0)
     );
-  }
 
+    if(newRate===null) return;
 
-  function calculateTodayProductionCost(){
-    return getTodayProduction().reduce(
-      (sum,x) => sum + (Number(x.totalCost)||0),
-      0
-    );
-  }
+    const rate=Number(newRate);
 
+    if(!Number.isFinite(rate) || rate<0){
+      alert("Rate सही नहीं है।");
+      return;
+    }
 
-  function refreshDashboard(){
+    item.qty=qty;
+    item.rate=rate;
+    item.cost=qty*rate;
+    item.editedAt=new Date().toISOString();
 
-    const sales = calculateTodaySales();
-    const productionCost =
-      calculateTodayProductionCost();
+    localStorage.setItem(key,JSON.stringify(list));
 
-    const staff =
-      calculateTodayStaffExpense();
-
-    const profit =
-      sales - productionCost - staff;
-
-    document.getElementById("totalSales").innerText =
-      "₹" + sales.toFixed(2);
-
-    document.getElementById("totalExpense").innerText =
-      "₹" + (productionCost + staff).toFixed(2);
-
-    document.getElementById("totalProfit").innerText =
-      "₹" + profit.toFixed(2);
-
-    document.getElementById("profitLabel").innerText =
-      profit >= 0
-        ? "Profit"
-        : "Loss";
-
-    const production =
-      getTodayProduction().reduce(
-        (sum,x) => sum + (Number(x.rice)||0),
-        0
-      );
-
-    document.getElementById("todayProduction").innerText =
-      production.toFixed(3) + " KG Rice";
+    renderFullPurchaseHistory();
+    renderRiceHistory();
+    renderOilHistory();
+    renderChickenHistory();
 
     formatRiceStock();
     formatOilStock();
     formatChickenStock();
+
+    updateRicePreview();
+    updateOilPreview();
+    updateChickenPreview();
+
+    refreshDashboard();
+
+    alert("Entry Successfully Updated!");
+  }
+
+
+  function deletePurchase(type,id){
+    let key="";
+    let label="";
+
+    if(type==="rice"){
+      key=RICE_KEY;
+      label="Rice";
+    }
+
+    if(type==="oil"){
+      key=OIL_KEY;
+      label="Oil";
+    }
+
+    if(type==="chicken"){
+      key=CHICKEN_KEY;
+      label="Chicken";
+    }
+
+    if(!key) return;
+
+    const ok=confirm(
+      `${label} की यह entry delete करनी है?\n\nयह action इस entry को permanently हटा देगा।`
+    );
+
+    if(!ok) return;
+
+    const list=safeJSON(key,[]);
+    const updated=list.filter(x=>Number(x.id)!==Number(id));
+
+    localStorage.setItem(key,JSON.stringify(updated));
+
+    renderFullPurchaseHistory();
+    renderRiceHistory();
+    renderOilHistory();
+    renderChickenHistory();
+
+    formatRiceStock();
+    formatOilStock();
+    formatChickenStock();
+
+    updateRicePreview();
+    updateOilPreview();
+    updateChickenPreview();
+
+    refreshDashboard();
+
+    alert(`${label} Entry Deleted!`);
+  }
+
+
+  function editMasalaBatch(id){
+    const list=getMasalaBatches();
+    const index=list.findIndex(x=>Number(x.id)===Number(id));
+
+    if(index===-1){
+      alert("Masala Batch नहीं मिला।");
+      return;
+    }
+
+    const item=list[index];
+
+    const newQty=prompt(
+      "Batch Quantity (KG) enter करें:",
+      Number(item.qty||0)
+    );
+
+    if(newQty===null) return;
+
+    const qty=Number(newQty);
+
+    if(!Number.isFinite(qty) || qty<0){
+      alert("Quantity सही नहीं है।");
+      return;
+    }
+
+    const newRate=prompt(
+      "Batch Rate ₹/KG enter करें:",
+      Number(item.rate||0)
+    );
+
+    if(newRate===null) return;
+
+    const rate=Number(newRate);
+
+    if(!Number.isFinite(rate) || rate<0){
+      alert("Rate सही नहीं है।");
+      return;
+    }
+
+    item.qty=qty;
+    item.remainingQty=Math.min(
+      Number(item.remainingQty||0),
+      qty
+    );
+
+    item.rate=rate;
+    item.cost=qty*rate;
+    item.editedAt=new Date().toISOString();
+
+    saveMasalaBatches(list);
+
+    renderFullPurchaseHistory();
+    renderMasalaMasterHistory();
     formatMasalaStock();
+    refreshDashboard();
 
-    const entryCount =
-      getTodayProduction().length +
-      getTodaySales().length +
-      getTodayStaffExpense().length;
-
-    document.getElementById("entryStatus").innerText =
-      entryCount
-        ? "Today's entries saved"
-        : "No entries yet";
-
-    document.getElementById("entryStatusText").innerText =
-      entryCount
-        ? entryCount + " saved entry/entries found for today."
-        : "Start adding today's business entries.";
-
-    renderRecentReports();
+    alert("Masala Batch Successfully Updated!");
   }
-        need -= take;
-      purchaseLeft -= take;
 
-      if(purchaseLeft<=0.000001){
-        purchaseIndex++;
-        purchaseLeft =
-          purchaseIndex<purchases.length
-            ? purchases[purchaseIndex].qty
-            : 0;
-      }
+
+  function deleteMasalaBatch(id){
+    const ok=confirm(
+      "यह Masala Batch delete करनी है?\n\nयह action permanently delete करेगा।"
+    );
+
+    if(!ok) return;
+
+    const list=getMasalaBatches();
+    const updated=list.filter(x=>Number(x.id)!==Number(id));
+
+    saveMasalaBatches(updated);
+
+    renderFullPurchaseHistory();
+    renderMasalaMasterHistory();
+    formatMasalaStock();
+    refreshDashboard();
+
+    alert("Masala Batch Deleted!");
+  }
+
+
+  function openProduction(){
+    hideAllPages();
+
+    const page=document.getElementById("productionPage");
+    if(page) page.style.display="block";
+
+    setActiveNav("navEntry");
+
+    const date=document.getElementById("productionDate");
+    if(date && !date.value) date.value=getLocalDateISO();
+
+    updateProductionPreview();
+    renderProductionHistory();
+  }
+
+
+  function updateProductionPreview(){
+    const rice=Number(document.getElementById("productionRice")?.value)||0;
+    const chickenQty=Number(document.getElementById("productionChickenQty")?.value)||0;
+    const chickenRate=Number(document.getElementById("productionChickenRate")?.value)||0;
+
+    const ricePurchases=getRicePurchases();
+
+    let riceRate=110;
+
+    if(ricePurchases.length){
+      const last=ricePurchases[ricePurchases.length-1];
+      riceRate=Number(last.rate)||110;
     }
 
-    result.push({
-      ...p,
-      riceCost:cost
+    const riceCost=rice*riceRate;
+
+    const masterTotals=getMasalaMasterTotals();
+    const masalaRate=masterTotals.kg>0
+      ? masterTotals.cost/masterTotals.kg
+      : 0;
+
+    const masalaUsed=rice*0.130;
+    const masalaCost=masalaUsed*masalaRate;
+
+    const oilUsed=rice*0.220;
+    const oilPurchases=getOilPurchases();
+
+    let oilRate=0;
+
+    if(oilPurchases.length){
+      const lastOil=oilPurchases[oilPurchases.length-1];
+      oilRate=Number(lastOil.rate)||0;
+    }
+
+    const oilCost=oilUsed*oilRate;
+
+    const chickenCost=chickenQty*chickenRate;
+    const otherCost=rice*50;
+
+    const total=
+      riceCost+
+      masalaCost+
+      oilCost+
+      chickenCost+
+      otherCost;
+
+    const set=(id,value)=>{
+      const el=document.getElementById(id);
+      if(el) el.innerText=value;
+    };
+
+    set("prodRiceCost",money(riceCost));
+    set("prodMasalaUsed",(masalaUsed*1000).toFixed(0)+" g");
+    set("prodMasalaCost",money(masalaCost));
+    set("prodOilUsed",(oilUsed*1000).toFixed(0)+" g");
+    set("prodOilCost",money(oilCost));
+    set("prodOtherCost",money(otherCost));
+    set("prodChickenCost",money(chickenCost));
+    set("prodTotalCost",money(total));
+  }
+
+
+  function saveProduction(){
+    const date=document.getElementById("productionDate").value || getLocalDateISO();
+    const rice=Number(document.getElementById("productionRice").value)||0;
+    const chickenQty=Number(document.getElementById("productionChickenQty").value)||0;
+    const chickenRate=Number(document.getElementById("productionChickenRate").value)||0;
+
+    if(rice<=0){
+      alert("कृपया Rice Used quantity दर्ज करें।");
+      return;
+    }
+
+    if(chickenQty<0 || chickenRate<0){
+      alert("Chicken quantity/rate सही दर्ज करें।");
+      return;
+    }
+
+    const ricePurchases=getRicePurchases();
+    let riceRate=110;
+
+    if(ricePurchases.length){
+      riceRate=Number(ricePurchases[ricePurchases.length-1].rate)||110;
+    }
+
+    const masterTotals=getMasalaMasterTotals();
+    const masalaRate=masterTotals.kg>0
+      ? masterTotals.cost/masterTotals.kg
+      : 0;
+
+    const masalaUsed=rice*0.130;
+    const oilUsed=rice*0.220;
+
+    const oilPurchases=getOilPurchases();
+    let oilRate=0;
+
+    if(oilPurchases.length){
+      oilRate=Number(oilPurchases[oilPurchases.length-1].rate)||0;
+    }
+
+    const riceCost=rice*riceRate;
+    const masalaCost=masalaUsed*masalaRate;
+    const oilCost=oilUsed*oilRate;
+    const chickenCost=chickenQty*chickenRate;
+    const otherCost=rice*50;
+
+    const totalCost=
+      riceCost+
+      masalaCost+
+      oilCost+
+      chickenCost+
+      otherCost;
+
+    const history=getProductionHistory();
+
+    history.push({
+      id:Date.now(),
+      date,
+      rice,
+      riceRate,
+      riceCost,
+      chickenQty,
+      chickenRate,
+      chickenCost,
+      masalaUsed,
+      masalaRate,
+      masalaCost,
+      oilKg:oilUsed,
+      oilRate,
+      oilCost,
+      otherCost,
+      totalCost,
+      savedAt:new Date().toISOString()
     });
+
+    localStorage.setItem(PRODUCTION_KEY,JSON.stringify(history));
+
+    document.getElementById("productionRice").value="";
+    document.getElementById("productionChickenQty").value="";
+    document.getElementById("productionChickenRate").value="";
+
+    updateProductionPreview();
+    renderProductionHistory();
+    refreshDashboard();
+
+    alert("Production Successfully Saved!");
   }
 
-  return result;
-}
 
-function getProductionHistory(){
-  try{
-    return JSON.parse(
-      localStorage.getItem(PRODUCTION_KEY)||"[]"
-    );
-  }catch(e){
-    return [];
-  }
-}
+  function renderProductionHistory(){
+    const box=document.getElementById("productionHistoryBox");
+    if(!box) return;
 
-function saveProduction(){
-  const date =
-    document.getElementById("productionDate").value ||
-    getLocalDateISO();
+    const h=getProductionHistory().slice().reverse().slice(0,10);
 
-  const rice =
-    Number(document.getElementById("productionRice").value)||0;
-
-  const chickenQty =
-    Number(document.getElementById("productionChickenQty").value)||0;
-
-  const chickenRate =
-    Number(document.getElementById("productionChickenRate").value)||0;
-
-  if(!date){
-    alert("Date चुनें");
-    return;
-  }
-
-  if(rice<=0){
-    alert("कृपया Rice Used सही दर्ज करें");
-    return;
-  }
-
-  if(chickenQty<=0){
-    alert("कृपया Chicken Quantity सही दर्ज करें");
-    return;
-  }
-
-  if(chickenRate<=0){
-    alert("कृपया Chicken Rate सही दर्ज करें");
-    return;
-  }
-
-  const riceStock=getRiceStock();
-  const oilStock=getOilStock();
-  const chickenStock=getChickenStock();
-  const masalaStock=getMasalaStock();
-
-  const masalaNeedKg=rice*0.130;
-  const oilNeedKg=rice*0.220;
-
-  if(riceStock+0.000001<rice){
-    alert(
-      "Rice Stock कम है। उपलब्ध: "+
-      riceStock.toFixed(3)+" KG"
-    );
-    return;
-  }
-
-  if(oilStock+0.000001<oilNeedKg){
-    alert(
-      "Oil Stock कम है। आवश्यक: "+
-      oilNeedKg.toFixed(3)+" KG"
-    );
-    return;
-  }
-
-  if(chickenStock+0.000001<chickenQty){
-    alert(
-      "Chicken Stock कम है। उपलब्ध: "+
-      chickenStock.toFixed(3)+" KG"
-    );
-    return;
-  }
-
-  if(masalaStock+0.000001<masalaNeedKg){
-    alert(
-      "Masala Stock कम है। आवश्यक: "+
-      masalaNeedKg.toFixed(3)+" KG"
-    );
-    return;
-  }
-
-  const riceRate =
-    getAverageRiceRateForQuantity(rice);
-
-  const riceCost=rice*riceRate;
-
-  const masalaRate=getMasalaStockRate();
-  const masalaCost=masalaNeedKg*masalaRate;
-
-  const oilRate=getAverageOilRateForQuantity(oilNeedKg);
-  const oilCost=oilNeedKg*oilRate;
-
-  const chickenCost=chickenQty*chickenRate;
-
-  const otherCost=rice*50;
-
-  const totalCost =
-    riceCost+
-    masalaCost+
-    oilCost+
-    chickenCost+
-    otherCost;
-
-  const list=getProductionHistory();
-
-  const rec={
-    date,
-    rice,
-    chickenQty,
-    chickenRate,
-    oilKg:oilNeedKg,
-    masalaKg:masalaNeedKg,
-    riceRate,
-    masalaRate,
-    oilRate,
-    riceCost,
-    masalaCost,
-    oilCost,
-    chickenCost,
-    otherCost,
-    totalCost,
-    total:totalCost,
-    savedAt:new Date().toISOString()
-  };
-
-  list.push(rec);
-
-  localStorage.setItem(
-    PRODUCTION_KEY,
-    JSON.stringify(list)
-  );
-
-  consumeMasalaForProduction(masalaNeedKg);
-
-  document.getElementById("productionRice").value="";
-  document.getElementById("productionChickenQty").value="";
-  document.getElementById("productionChickenRate").value="";
-
-  updateProductionPreview();
-  renderProductionHistory();
-  refreshDashboard();
-
-  alert(
-    "Production Successfully Saved!\n\n"+
-    "Total Cost: ₹"+totalCost.toFixed(2)
-  );
-}
-
-function getAverageRiceRateForQuantity(qty){
-  const list=getRicePurchases();
-
-  let need=qty;
-  let cost=0;
-
-  for(const item of list){
-    if(need<=0)break;
-
-    const q=Number(item.qty)||0;
-    const r=Number(item.rate)||0;
-    const take=Math.min(need,q);
-
-    cost+=take*r;
-    need-=take;
-  }
-
-  return qty?cost/qty:0;
-}
-
-function getAverageOilRateForQuantity(qty){
-  const list=getOilPurchases();
-
-  let need=qty;
-  let cost=0;
-
-  for(const item of list){
-    if(need<=0)break;
-
-    const q=Number(item.qty)||0;
-    const r=Number(item.rate)||0;
-    const take=Math.min(need,q);
-
-    cost+=take*r;
-    need-=take;
-  }
-
-  return qty?cost/qty:0;
-}
-
-function consumeMasalaForProduction(need){
-  const list=getMasalaBatches();
-
-  for(const item of list){
-    if(need<=0.000001)break;
-
-    const available=
-      Number(
-        item.remainingQty!==undefined
-          ? item.remainingQty
-          : item.qty
-      )||0;
-
-    const used=Math.min(available,need);
-
-    item.remainingQty=available-used;
-
-    need-=used;
-  }
-
-  saveMasalaBatches(list);
-}
-
-function updateProductionPreview(){
-  const rice=
-    Number(
-      document.getElementById("productionRice")?.value
-    )||0;
-
-  const chickenQty=
-    Number(
-      document.getElementById("productionChickenQty")?.value
-    )||0;
-
-  const chickenRate=
-    Number(
-      document.getElementById("productionChickenRate")?.value
-    )||0;
-
-  const masalaKg=rice*0.130;
-  const oilKg=rice*0.220;
-
-  const riceCost=
-    rice*getAverageRiceRateForQuantity(rice);
-
-  const masalaCost=
-    masalaKg*getMasalaStockRate();
-
-  const oilCost=
-    oilKg*getAverageOilRateForQuantity(oilKg);
-
-  const chickenCost=
-    chickenQty*chickenRate;
-
-  const otherCost=
-    rice*50;
-
-  const total=
-    riceCost+
-    masalaCost+
-    oilCost+
-    chickenCost+
-    otherCost;
-
-  const ids={
-    prodRiceCost:riceCost,
-    prodMasalaUsed:masalaKg*1000,
-    prodMasalaCost:masalaCost,
-    prodOilUsed:oilKg*1000,
-    prodOilCost:oilCost,
-    prodOtherCost:otherCost,
-    prodChickenCost:chickenCost,
-    prodTotalCost:total
-  };
-
-  Object.keys(ids).forEach(id=>{
-    const el=document.getElementById(id);
-    if(!el)return;
-
-    if(
-      id==="prodMasalaUsed" ||
-      id==="prodOilUsed"
-    ){
-      el.innerText=
-        Number(ids[id]).toFixed(0)+" g";
-    }else{
-      el.innerText=
-        "₹"+Number(ids[id]).toFixed(2);
+    if(!h.length){
+      box.innerHTML='<div class="empty-history">अभी कोई Production record नहीं है।</div>';
+      return;
     }
-  });
-}
 
-function renderProductionHistory(){
-  const box=
-    document.getElementById("productionHistoryBox");
-
-  if(!box)return;
-
-  const list=
-    getProductionHistory()
-      .slice()
-      .reverse()
-      .slice(0,5);
-
-  if(!list.length){
-    box.innerHTML=
-      '<div class="empty-history">अभी कोई Production record नहीं है।</div>';
-    return;
-  }
-
-  box.innerHTML=
-    list.map(item=>`
+    box.innerHTML=h.map(x=>`
       <div class="history-item">
         <div>
-          <b>${item.date}</b>
+          <b>${x.date}</b>
           <span>
-            Rice ${Number(item.rice||0).toFixed(3)} KG •
-            Chicken ${Number(item.chickenQty||0).toFixed(3)} KG
+            Rice ${Number(x.rice||0).toFixed(3)} KG |
+            Chicken ${Number(x.chickenQty||0).toFixed(3)} KG
           </span>
         </div>
         <div style="text-align:right;">
-          <b>₹${Number(item.total||item.totalCost||0).toFixed(2)}</b>
-          <span>Production Cost</span>
+          <b>${money(x.totalCost)}</b>
+          <button onclick="editProduction(${x.id})" style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;margin-top:5px;">Edit</button>
+          <button onclick="deleteProduction(${x.id})" style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;margin-top:5px;">Delete</button>
         </div>
       </div>
     `).join("");
-}
+    }
+      function editProduction(id){
+    const list=getProductionHistory();
+    const index=list.findIndex(x=>Number(x.id)===Number(id));
 
-function openProduction(){
-  setActiveNav("navEntry");
-  hideAllPages();
+    if(index===-1){
+      alert("Production entry नहीं मिली।");
+      return;
+    }
 
-  document.getElementById("productionPage").style.display="block";
+    const item=list[index];
 
-  document.getElementById("productionDate").value=
-    getLocalDateISO();
-
-  document.getElementById("productionRice").value="";
-  document.getElementById("productionChickenQty").value="";
-  document.getElementById("productionChickenRate").value="";
-
-  updateProductionPreview();
-  renderProductionHistory();
-}
-
-function openEntryMenu(){
-  setActiveNav("navEntry");
-  hideAllPages();
-
-  document.getElementById("entryMenuPage").style.display="block";
-}
-
-function openReports(){
-  setActiveNav("navReports");
-  hideAllPages();
-
-  document.getElementById("reportsPage").style.display="block";
-
-  document.getElementById("reportDate").value=
-    getLocalDateISO();
-
-  renderDailyReport();
-  renderRecentReports();
-}
-
-function renderDailyReport(){
-  const date=
-    document.getElementById("reportDate").value;
-
-  if(!date)return;
-
-  const productions=
-    getProductionHistory()
-      .filter(x=>x.date===date);
-
-  const sales=
-    getSalesHistory()
-      .filter(x=>x.date===date);
-
-  const staff=
-    getStaffExpenseHistory()
-      .filter(x=>x.date===date);
-
-  const riceUsed=
-    productions.reduce(
-      (a,x)=>a+(Number(x.rice)||0),0
+    const newRice=prompt(
+      "Rice Used (KG):",
+      Number(item.rice||0)
     );
 
-  const productionCost=
-    productions.reduce(
-      (a,x)=>a+(Number(x.total||x.totalCost)||0),0
+    if(newRice===null) return;
+
+    const rice=Number(newRice);
+
+    if(!Number.isFinite(rice) || rice<0){
+      alert("Rice quantity सही नहीं है।");
+      return;
+    }
+
+    const newChicken=prompt(
+      "Chicken Used (KG):",
+      Number(item.chickenQty||0)
     );
 
-  const totalSales=
-    sales.reduce(
-      (a,x)=>a+(Number(x.amount)||0),0
+    if(newChicken===null) return;
+
+    const chickenQty=Number(newChicken);
+
+    if(!Number.isFinite(chickenQty) || chickenQty<0){
+      alert("Chicken quantity सही नहीं है।");
+      return;
+    }
+
+    const newChickenRate=prompt(
+      "Chicken Rate ₹/KG:",
+      Number(item.chickenRate||0)
     );
 
-  const staffExpense=
-    staff.reduce(
-      (a,x)=>a+(Number(x.amount)||0),0
+    if(newChickenRate===null) return;
+
+    const chickenRate=Number(newChickenRate);
+
+    if(!Number.isFinite(chickenRate) || chickenRate<0){
+      alert("Chicken rate सही नहीं है।");
+      return;
+    }
+
+    const riceRate=Number(item.riceRate)||110;
+
+    const masalaRate=Number(item.masalaRate)||0;
+    const oilRate=Number(item.oilRate)||0;
+
+    const masalaUsed=rice*0.130;
+    const oilUsed=rice*0.220;
+
+    const riceCost=rice*riceRate;
+    const masalaCost=masalaUsed*masalaRate;
+    const oilCost=oilUsed*oilRate;
+    const chickenCost=chickenQty*chickenRate;
+    const otherCost=rice*50;
+
+    const totalCost=
+      riceCost+
+      masalaCost+
+      oilCost+
+      chickenCost+
+      otherCost;
+
+    item.rice=rice;
+    item.chickenQty=chickenQty;
+    item.chickenRate=chickenRate;
+
+    item.riceCost=riceCost;
+    item.masalaUsed=masalaUsed;
+    item.masalaCost=masalaCost;
+    item.oilKg=oilUsed;
+    item.oilCost=oilCost;
+    item.chickenCost=chickenCost;
+    item.otherCost=otherCost;
+    item.totalCost=totalCost;
+    item.editedAt=new Date().toISOString();
+
+    list[index]=item;
+
+    localStorage.setItem(
+      PRODUCTION_KEY,
+      JSON.stringify(list)
     );
 
-  const profit=
-    totalSales-
-    productionCost-
-    staffExpense;
+    renderProductionHistory();
+    refreshDashboard();
+    renderDailyReport();
 
-  document.getElementById("reportRiceUsed").innerText=
-    riceUsed.toFixed(3)+" KG";
+    alert("Production Entry Successfully Updated!");
+  }
 
-  document.getElementById("reportProductionCost").innerText=
-    "₹"+productionCost.toFixed(2);
 
-  document.getElementById("reportSales").innerText=
-    "₹"+totalSales.toFixed(2);
+  function deleteProduction(id){
+    const ok=confirm(
+      "यह Production entry delete करनी है?\n\n" +
+      "इससे इस production record का cost/report calculation भी बदल जाएगा।"
+    );
 
-  document.getElementById("reportProductionEntries").innerText=
-    productions.length;
+    if(!ok) return;
 
-  document.getElementById("reportStaffExpense").innerText=
-    "₹"+staffExpense.toFixed(2);
+    const list=getProductionHistory();
 
-  document.getElementById("reportProfit").innerText=
-    "₹"+profit.toFixed(2);
+    const updated=list.filter(
+      x=>Number(x.id)!==Number(id)
+    );
 
-  document.getElementById("reportResultLabel").innerText=
-    profit>=0
-      ? "Net Profit"
-      : "Net Loss";
-}
+    localStorage.setItem(
+      PRODUCTION_KEY,
+      JSON.stringify(updated)
+    );
 
-function renderRecentReports(){
-  const box=
-    document.getElementById("recentReports");
+    renderProductionHistory();
+    refreshDashboard();
+    renderDailyReport();
 
-  if(!box)return;
+    alert("Production Entry Deleted!");
+  }
 
-  const dates=new Set();
 
-  getProductionHistory().forEach(x=>dates.add(x.date));
-  getSalesHistory().forEach(x=>dates.add(x.date));
-  getStaffExpenseHistory().forEach(x=>dates.add(x.date));
+  function openSale(){
+    hideAllPages();
 
-  const sorted=
-    Array.from(dates)
+    const page=document.getElementById("salesPage");
+    if(page) page.style.display="block";
+
+    setActiveNav("navEntry");
+
+    const date=document.getElementById("salesDate");
+
+    if(date && !date.value){
+      date.value=getLocalDateISO();
+    }
+
+    updateSalesPreview();
+  }
+
+
+  function getSalesData(){
+    return safeJSON("a1DailySales",[]);
+  }
+
+
+  function saveSalesData(data){
+    localStorage.setItem(
+      "a1DailySales",
+      JSON.stringify(data)
+    );
+  }
+
+
+  function updateSalesPreview(){
+    const date=document.getElementById("salesDate")?.value;
+
+    if(!date) return;
+
+    const list=getSalesData();
+
+    const item=list.find(x=>x.date===date);
+
+    const el=document.getElementById(
+      "savedSalesPreview"
+    );
+
+    if(el){
+      el.innerText=money(
+        item ? Number(item.amount)||0 : 0
+      );
+    }
+  }
+
+
+  function saveDailySale(){
+    const date=
+      document.getElementById("salesDate").value ||
+      getLocalDateISO();
+
+    const amount=
+      Number(document.getElementById("salesAmount").value)||0;
+
+    if(amount<0){
+      alert("Sales amount सही दर्ज करें।");
+      return;
+    }
+
+    const list=getSalesData();
+
+    const index=list.findIndex(
+      x=>x.date===date
+    );
+
+    const record={
+      id:index>=0
+        ? list[index].id
+        : Date.now(),
+
+      date,
+      amount,
+      savedAt:new Date().toISOString()
+    };
+
+    if(index>=0){
+      list[index]=record;
+    }else{
+      list.push(record);
+    }
+
+    saveSalesData(list);
+
+    document.getElementById("salesAmount").value="";
+
+    updateSalesPreview();
+    refreshDashboard();
+    renderDailyReport();
+
+    alert("Daily Sales Successfully Saved!");
+  }
+
+
+  function viewSalesHistory(){
+    const box=document.getElementById(
+      "salesHistoryBox"
+    );
+
+    if(!box) return;
+
+    box.style.display=
+      box.style.display==="none"
+      ? "block"
+      : "none";
+
+    if(box.style.display==="none") return;
+
+    const list=getSalesData()
+      .slice()
+      .reverse();
+
+    if(!list.length){
+      box.innerHTML=
+        '<div class="empty-history">अभी कोई Sales record नहीं है।</div>';
+      return;
+    }
+
+    box.innerHTML=list.map(x=>`
+      <div class="history-item">
+        <div>
+          <b>${x.date}</b>
+          <span>Daily Total Sales</span>
+        </div>
+
+        <div style="text-align:right;">
+          <b>${money(x.amount)}</b>
+
+          <button
+            onclick="editSale(${x.id})"
+            style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;margin-top:5px;">
+            Edit
+          </button>
+
+          <button
+            onclick="deleteSale(${x.id})"
+            style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;margin-top:5px;">
+            Delete
+          </button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+
+  function editSale(id){
+    const list=getSalesData();
+
+    const index=list.findIndex(
+      x=>Number(x.id)===Number(id)
+    );
+
+    if(index===-1){
+      alert("Sales entry नहीं मिली।");
+      return;
+    }
+
+    const item=list[index];
+
+    const value=prompt(
+      "Total Sales ₹:",
+      Number(item.amount)||0
+    );
+
+    if(value===null) return;
+
+    const amount=Number(value);
+
+    if(!Number.isFinite(amount) || amount<0){
+      alert("Sales amount सही दर्ज करें।");
+      return;
+    }
+
+    item.amount=amount;
+    item.editedAt=new Date().toISOString();
+
+    list[index]=item;
+
+    saveSalesData(list);
+
+    updateSalesPreview();
+    viewSalesHistory();
+    refreshDashboard();
+    renderDailyReport();
+
+    alert("Sales Entry Successfully Updated!");
+  }
+
+
+  function deleteSale(id){
+    const ok=confirm(
+      "यह Sales entry delete करनी है?"
+    );
+
+    if(!ok) return;
+
+    const list=getSalesData();
+
+    const updated=list.filter(
+      x=>Number(x.id)!==Number(id)
+    );
+
+    saveSalesData(updated);
+
+    viewSalesHistory();
+    refreshDashboard();
+    renderDailyReport();
+
+    alert("Sales Entry Deleted!");
+  }
+
+
+  function openStaffExpense(){
+    hideAllPages();
+
+    const page=document.getElementById(
+      "staffExpensePage"
+    );
+
+    if(page) page.style.display="block";
+
+    setActiveNav("navEntry");
+
+    const date=
+      document.getElementById("staffExpenseDate");
+
+    if(date && !date.value){
+      date.value=getLocalDateISO();
+    }
+
+    updateStaffExpensePreview();
+  }
+
+
+  function getStaffExpenses(){
+    return safeJSON(
+      "a1StaffExpenses",
+      []
+    );
+  }
+
+
+  function saveStaffExpenses(data){
+    localStorage.setItem(
+      "a1StaffExpenses",
+      JSON.stringify(data)
+    );
+  }
+
+
+  function updateStaffExpensePreview(){
+    const date=
+      document.getElementById(
+        "staffExpenseDate"
+      )?.value;
+
+    if(!date) return;
+
+    const list=getStaffExpenses();
+
+    const item=list.find(
+      x=>x.date===date
+    );
+
+    const el=document.getElementById(
+      "savedStaffExpensePreview"
+    );
+
+    if(el){
+      el.innerText=money(
+        item ? Number(item.amount)||0 : 0
+      );
+    }
+  }
+
+
+  function saveStaffExpense(){
+    const date=
+      document.getElementById(
+        "staffExpenseDate"
+      ).value ||
+      getLocalDateISO();
+
+    const amount=
+      Number(
+        document.getElementById(
+          "staffExpenseAmount"
+        ).value
+      )||0;
+
+    if(amount<0){
+      alert("Staff payment सही दर्ज करें।");
+      return;
+    }
+
+    const list=getStaffExpenses();
+
+    const index=list.findIndex(
+      x=>x.date===date
+    );
+
+    const record={
+      id:index>=0
+        ? list[index].id
+        : Date.now(),
+
+      date,
+      amount,
+      savedAt:new Date().toISOString()
+    };
+
+    if(index>=0){
+      list[index]=record;
+    }else{
+      list.push(record);
+    }
+
+    saveStaffExpenses(list);
+
+    document.getElementById(
+      "staffExpenseAmount"
+    ).value="";
+
+    updateStaffExpensePreview();
+    refreshDashboard();
+    renderDailyReport();
+
+    alert("Staff Expense Successfully Saved!");
+  }
+
+
+  function viewStaffExpenseHistory(){
+    const box=document.getElementById(
+      "staffExpenseHistoryBox"
+    );
+
+    if(!box) return;
+
+    box.style.display=
+      box.style.display==="none"
+      ? "block"
+      : "none";
+
+    if(box.style.display==="none") return;
+
+    const list=getStaffExpenses()
+      .slice()
+      .reverse();
+
+    if(!list.length){
+      box.innerHTML=
+        '<div class="empty-history">अभी कोई Staff Expense record नहीं है।</div>';
+      return;
+    }
+
+    box.innerHTML=list.map(x=>`
+      <div class="history-item">
+        <div>
+          <b>${x.date}</b>
+          <span>Daily Staff Payment</span>
+        </div>
+
+        <div style="text-align:right;">
+          <b>${money(x.amount)}</b>
+
+          <button
+            onclick="editStaffExpense(${x.id})"
+            style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;margin-top:5px;">
+            Edit
+          </button>
+
+          <button
+            onclick="deleteStaffExpense(${x.id})"
+            style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;margin-top:5px;">
+            Delete
+          </button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+
+  function editStaffExpense(id){
+    const list=getStaffExpenses();
+
+    const index=list.findIndex(
+      x=>Number(x.id)===Number(id)
+    );
+
+    if(index===-1){
+      alert("Staff Expense entry नहीं मिली।");
+      return;
+    }
+
+    const item=list[index];
+
+    const value=prompt(
+      "Staff Payment ₹:",
+      Number(item.amount)||0
+    );
+
+    if(value===null) return;
+
+    const amount=Number(value);
+
+    if(!Number.isFinite(amount) || amount<0){
+      alert("Amount सही दर्ज करें।");
+      return;
+    }
+
+    item.amount=amount;
+    item.editedAt=new Date().toISOString();
+
+    list[index]=item;
+
+    saveStaffExpenses(list);
+
+    updateStaffExpensePreview();
+    viewStaffExpenseHistory();
+    refreshDashboard();
+    renderDailyReport();
+
+    alert("Staff Expense Successfully Updated!");
+  }
+
+
+  function deleteStaffExpense(id){
+    const ok=confirm(
+      "यह Staff Expense entry delete करनी है?"
+    );
+
+    if(!ok) return;
+
+    const list=getStaffExpenses();
+
+    const updated=list.filter(
+      x=>Number(x.id)!==Number(id)
+    );
+
+    saveStaffExpenses(updated);
+
+    viewStaffExpenseHistory();
+    refreshDashboard();
+    renderDailyReport();
+
+    alert("Staff Expense Deleted!");
+  }
+
+
+  function openEntryMenu(){
+    hideAllPages();
+
+    const page=document.getElementById(
+      "entryMenuPage"
+    );
+
+    if(page) page.style.display="block";
+
+    setActiveNav("navEntry");
+  }
+
+
+  function openReports(){
+    hideAllPages();
+
+    const page=document.getElementById(
+      "reportsPage"
+    );
+
+    if(page) page.style.display="block";
+
+    setActiveNav("navReports");
+
+    const date=document.getElementById(
+      "reportDate"
+    );
+
+    if(date && !date.value){
+      date.value=getLocalDateISO();
+    }
+
+    renderDailyReport();
+  }
+
+
+  function renderDailyReport(){
+    const date=
+      document.getElementById(
+        "reportDate"
+      )?.value;
+
+    if(!date) return;
+
+    const productions=
+      getProductionHistory().filter(
+        x=>x.date===date
+      );
+
+    const sales=
+      getSalesData().find(
+        x=>x.date===date
+      );
+
+    const staff=
+      getStaffExpenses().find(
+        x=>x.date===date
+      );
+
+    const riceUsed=
+      productions.reduce(
+        (sum,x)=>sum+(Number(x.rice)||0),
+        0
+      );
+
+    const productionCost=
+      productions.reduce(
+        (sum,x)=>sum+(Number(x.totalCost)||0),
+        0
+      );
+
+    const totalSales=
+      sales ? Number(sales.amount)||0 : 0;
+
+    const staffExpense=
+      staff ? Number(staff.amount)||0 : 0;
+
+    const profit=
+      totalSales-
+      productionCost-
+      staffExpense;
+
+    const set=(id,value)=>{
+      const el=document.getElementById(id);
+      if(el) el.innerText=value;
+    };
+
+    set(
+      "reportRiceUsed",
+      riceUsed.toFixed(3)+" KG"
+    );
+
+    set(
+      "reportProductionCost",
+      money(productionCost)
+    );
+
+    set(
+      "reportSales",
+      money(totalSales)
+    );
+
+    set(
+      "reportProductionEntries",
+      productions.length
+    );
+
+    set(
+      "reportStaffExpense",
+      money(staffExpense)
+    );
+
+    set(
+      "reportProfit",
+      money(profit)
+    );
+
+    const label=
+      document.getElementById(
+        "reportResultLabel"
+      );
+
+    if(label){
+      label.innerText=
+        profit>=0
+        ? "Net Profit"
+        : "Net Loss";
+    }
+
+    renderRecentReports();
+  }
+      function renderRecentReports(){
+    const box=document.getElementById("recentReports");
+    if(!box) return;
+
+    const dates=new Set();
+
+    getProductionHistory().forEach(x=>{
+      if(x.date) dates.add(x.date);
+    });
+
+    getSalesData().forEach(x=>{
+      if(x.date) dates.add(x.date);
+    });
+
+    getStaffExpenses().forEach(x=>{
+      if(x.date) dates.add(x.date);
+    });
+
+    const list=Array.from(dates)
       .sort()
       .reverse()
       .slice(0,10);
 
-  if(!sorted.length){
-    box.innerHTML=
-      '<div class="empty-history">अभी कोई Daily Report नहीं है।</div>';
-    return;
-  }
+    if(!list.length){
+      box.innerHTML=
+        '<div class="empty-history">अभी कोई Daily Report नहीं है।</div>';
+      return;
+    }
 
-  box.innerHTML=
-    sorted.map(date=>{
+    box.innerHTML=list.map(date=>{
       const productions=
-        getProductionHistory()
-          .filter(x=>x.date===date);
+        getProductionHistory().filter(
+          x=>x.date===date
+        );
 
       const sales=
-        getSalesHistory()
-          .filter(x=>x.date===date);
+        getSalesData().find(
+          x=>x.date===date
+        );
 
       const staff=
-        getStaffExpenseHistory()
-          .filter(x=>x.date===date);
+        getStaffExpenses().find(
+          x=>x.date===date
+        );
 
       const productionCost=
         productions.reduce(
-          (a,x)=>a+(Number(x.total||x.totalCost)||0),0
+          (sum,x)=>sum+(Number(x.totalCost)||0),
+          0
         );
 
       const totalSales=
-        sales.reduce(
-          (a,x)=>a+(Number(x.amount)||0),0
-        );
+        sales ? Number(sales.amount)||0 : 0;
 
       const staffExpense=
-        staff.reduce(
-          (a,x)=>a+(Number(x.amount)||0),0
-        );
+        staff ? Number(staff.amount)||0 : 0;
 
       const profit=
         totalSales-
@@ -2203,352 +2632,373 @@ function renderRecentReports(){
           <div>
             <b>${date}</b>
             <span>
-              Sales ₹${totalSales.toFixed(2)} •
-              Cost ₹${(productionCost+staffExpense).toFixed(2)}
+              Sales ${money(totalSales)} |
+              Cost ${money(productionCost)} |
+              Staff ${money(staffExpense)}
             </span>
           </div>
+
           <div style="text-align:right;">
-            <b>₹${profit.toFixed(2)}</b>
-            <span>${profit>=0?"Profit":"Loss"}</span>
+            <b>${money(profit)}</b>
+            <span>${profit>=0 ? "Profit" : "Loss"}</span>
           </div>
         </div>
       `;
     }).join("");
-     }
-      const riceUsed=prodRecords.reduce((a,x)=>a+(Number(x.rice)||0),0);
-    const profit=sales-cost;
-    document.getElementById("totalSales").innerText=money(sales);
-    document.getElementById("totalExpense").innerText=money(cost);
-    document.getElementById("totalProfit").innerText=money(profit);
-    const pl=document.getElementById("profitLabel"); if(pl) pl.innerText=profit<0?"Today Loss":"Today Profit";
-    document.getElementById("todayProduction").innerText=riceUsed.toFixed(3)+" KG Rice";
-    document.getElementById("dashRiceStock").innerText=getRiceStock().toFixed(3)+" KG";
-    document.getElementById("dashOilStock").innerText=getOilStock().toFixed(3)+" KG";
-    document.getElementById("dashChickenStock").innerText=getChickenStock().toFixed(3)+" KG";
-    const dm=document.getElementById("dashMasalaStock"); if(dm) dm.innerText=getMasalaStock().toFixed(3)+" KG";
-    const title=document.getElementById("entryStatus"), text=document.getElementById("entryStatusText");
-    if(salesRecords.length && prodRecords.length){ title.innerText="✅ Daily entries complete"; text.innerText="Sales + Production + Staff Expense are included in today's Profit/Loss."; }
-    else if(salesRecords.length || prodRecords.length || staffRecords.length){ title.innerText="⚠️ Daily entries pending"; text.innerText="Today's Profit/Loss updates automatically as Sales, Production and Staff Expense are saved."; }
-    else { title.innerText="ℹ️ No entry for today"; text.innerText="Add today's Sales, Production and Staff Expense from SBS Entry modules."; }
   }
 
-  function setActiveNav(active){
-    const ids=["navDashboard","navStock","navEntry","navReports","navSettings"];
-    ids.forEach(id=>{const el=document.getElementById(id); if(el) el.classList.toggle("active", id===active);});
-  }
 
-  function showDashboard(){
-    setActiveNav("navDashboard");
-    ["settingsPage","masalaPage","dataManagerPage","stockPage","historyPage","productionPage","salesPage","reportsPage","staffExpensePage","entryMenuPage"].forEach(id=>document.getElementById(id).style.display="none");
-    document.querySelector(".container:not(.settings-page)").style.display="block";
-    refreshDashboard();
-  }
-
-  function updateProfit(){ refreshDashboard(); }
-
-  function openSale() {
-    setActiveNav("navEntry");
-    hideAllPages();
-    document.getElementById("salesPage").style.display="block";
-    document.getElementById("salesDate").value=getLocalDateISO();
-    document.getElementById("salesAmount").value="";
-    updateSalesPreview();
-  }
-
-  function getSalesHistory(){try{return JSON.parse(localStorage.getItem("a1SalesHistory")||"[]")}catch(e){return []}}
-  function updateSalesPreview(){const d=document.getElementById("salesDate").value;const item=getSalesHistory().find(x=>x.date===d);document.getElementById("savedSalesPreview").innerText="₹"+Number(item?item.amount:0).toFixed(2)}
-  function saveDailySale(){const date=getLocalDateISO(); document.getElementById("salesDate").value=date; const amount=Number(document.getElementById("salesAmount").value);if(!date){alert("Date चुनें");return;}if(!amount||amount<=0){alert("कृपया सही Total Sales दर्ज करें");return;}let h=getSalesHistory();const i=h.findIndex(x=>x.date===date);const rec={date,amount,savedAt:new Date().toISOString()};if(i>=0)h[i]=rec;else h.push(rec);localStorage.setItem("a1SalesHistory",JSON.stringify(h));localStorage.setItem("totalSales",amount);document.getElementById("totalSales").innerText="₹"+amount.toFixed(2);updateProfit();updateSalesPreview();alert("Daily Sales ₹"+amount.toFixed(2)+" Successfully Saved!"); refreshDashboard();}
-  function viewSalesHistory(){const b=document.getElementById("salesHistoryBox");const h=getSalesHistory().slice().reverse();b.style.display="block";b.innerHTML=h.length?h.map(x=>`<div class="history-item"><div><b>${x.date}</b><span>Daily Total Sales</span></div><div><b>₹${Number(x.amount).toFixed(2)}</b></div></div>`).join(""):'<div class="empty-history">अभी कोई Sales record नहीं है।</div>';}
-
-  function calculateRiceCostAllocation(productions){
-    const purchases=getRicePurchases().map(x=>({qty:Number(x.qty)||0,rate:Number(x.rate)||0}));
-    let purchaseIndex=0, purchaseLeft=purchases.length?(purchases[0].qty):0;
-    const result=[];
-    for(const p of productions){
-      let need=Number(p.rice)||0, cost=0;
-      while(need>0.000001 && purchaseIndex<purchases.length){
-        const take=Math.min(need,purchaseLeft);
-        cost += take*purchases[purchaseIndex].rate;
-        need -= take; purchaseLeft -= take;
-        if(purchaseLeft<=0.000001){ purchaseIndex++; purchaseLeft=purchaseIndex<purchases.length?purchases[purchaseIndex].qty:0; }
-      }
-      result.push(need>0.000001?null:cost);
-    }
-    return result;
-  }
-
-  function ensureRiceCosts(){
-    const history=getProductionHistory(); if(!history.length) return;
-    const ordered=history.map((p,i)=>({p,i})).sort((a,b)=>String(a.p.savedAt||a.p.date).localeCompare(String(b.p.savedAt||b.p.date)));
-    const costs=calculateRiceCostAllocation(ordered.map(x=>x.p));
-    let changed=false;
-    ordered.forEach((item,idx)=>{
-      const p=item.p, c=costs[idx];
-      if(c!==null && p.riceCost===undefined){ p.riceCost=c; p.total=(Number(p.total)||0)+c; changed=true; }
-    });
-    if(changed) localStorage.setItem(PRODUCTION_KEY,JSON.stringify(history));
-  }
-
-  function getRiceCostForNewProduction(rice){
-    const history=getProductionHistory().slice().sort((a,b)=>String(a.savedAt||a.date).localeCompare(String(b.savedAt||b.date)));
-    history.push({rice});
-    const costs=calculateRiceCostAllocation(history);
-    return costs[costs.length-1]===null?0:costs[costs.length-1];
-  }
-
-  function openProduction() {
-    setActiveNav("navEntry");
-    hideAllPages();
-    document.getElementById("productionPage").style.display="block";
-    document.getElementById("productionDate").value=getLocalDateISO();
-    ["productionRice","productionChickenQty","productionChickenRate"].forEach(id=>document.getElementById(id).oninput=calculateProduction);
-    calculateProduction();
-    renderProductionHistory();
-  }
-
-  function calculateProduction(){
-    const rice=Number(document.getElementById("productionRice").value)||0;
-    const chickenQty=Number(document.getElementById("productionChickenQty").value)||0;
-    const chickenRate=Number(document.getElementById("productionChickenRate").value)||0;
-    const masalaUsed=rice*130, oilUsed=rice*220, other=rice*50;
-    const masalaCostPerG=getMasalaStockRate()/1000;
-    const oilPurchases=getOilPurchases();
-    const lastOil=oilPurchases.length?Number(oilPurchases[oilPurchases.length-1].rate)||0:0;
-    const riceCost=rice>0?getRiceCostForNewProduction(rice):0;
-    const masalaCost=masalaUsed*masalaCostPerG, oilCost=(oilUsed/1000)*lastOil, chickenCost=chickenQty*chickenRate;
-    const total=riceCost+masalaCost+oilCost+other+chickenCost;
-    document.getElementById("prodRiceCost").innerText="₹"+riceCost.toFixed(2);
-    document.getElementById("prodMasalaUsed").innerText=masalaUsed.toFixed(0)+" g";
-    document.getElementById("prodMasalaCost").innerText="₹"+masalaCost.toFixed(2);
-    document.getElementById("prodOilUsed").innerText=oilUsed.toFixed(0)+" g";
-    document.getElementById("prodOilCost").innerText="₹"+oilCost.toFixed(2);
-    document.getElementById("prodOtherCost").innerText="₹"+other.toFixed(2);
-    document.getElementById("prodChickenCost").innerText="₹"+chickenCost.toFixed(2);
-    document.getElementById("prodTotalCost").innerText="₹"+total.toFixed(2);
-  }
-
-  function renderProductionHistory(){
-    const box=document.getElementById("productionHistoryBox");
-    if(!box) return;
-    const h=getProductionHistory().slice().sort((a,b)=>String(b.savedAt||b.date).localeCompare(String(a.savedAt||a.date)));
-    if(!h.length){ box.innerHTML='<div class="empty-history">अभी कोई Production record नहीं है।</div>'; return; }
-    box.innerHTML=h.slice(0,10).map(x=>`<div class="history-item"><div><b>${x.date}</b><span>Rice ${Number(x.rice||0).toFixed(3)} KG • Chicken ${Number(x.chickenQty||0).toFixed(3)} KG</span></div><div style="text-align:right;"><b>₹${Number(x.total||0).toFixed(2)}</b><span>Production Cost</span></div></div>`).join("");
-  }
-
-  function saveProduction(){
-    const rice=Number(document.getElementById("productionRice").value)||0;
-    const chickenQty=Number(document.getElementById("productionChickenQty").value)||0;
-    const chickenRate=Number(document.getElementById("productionChickenRate").value)||0;
-    const oilKg=rice*0.220;
-    const masalaKg=rice*0.130;
-    if(rice<=0){alert("कृपया Rice Used सही दर्ज करें");return;}
-    if(rice>getRiceStock()+0.000001){alert("Rice Stock पर्याप्त नहीं है");return;}
-    if(oilKg>getOilStock()+0.000001){alert("Oil Stock पर्याप्त नहीं है");return;}
-    if(chickenQty>getChickenStock()+0.000001){alert("Chicken Stock पर्याप्त नहीं है");return;}
-    if(masalaKg>getMasalaStock()+0.000001){alert("Masala Stock पर्याप्त नहीं है");return;}
-    const masalaUsed=rice*130;
-
-    // FIFO deduction from prepared masala batches, preserving each batch's actual rate.
-    let needMasala=masalaKg, masalaCost=0;
-    const masalaBatches=getMasalaBatches();
-    for(const batch of masalaBatches){
-      if(needMasala<=0) break;
-      const available=Number(batch.remainingQty ?? batch.qty)||0;
-      const used=Math.min(available,needMasala);
-      masalaCost+=used*(Number(batch.rate)||0);
-      batch.remainingQty=available-used;
-      needMasala-=used;
-    }
-    if(needMasala>0.000001){alert("Masala Stock पर्याप्त नहीं है");return;}
-    saveMasalaBatches(masalaBatches);
-
-    const riceCost=getRiceCostForNewProduction(rice);
-    if(riceCost<=0){alert("Rice purchase cost उपलब्ध नहीं है");return;}
-
-    const oilPurchases=getOilPurchases();
-    const lastOil=oilPurchases.length?Number(oilPurchases[oilPurchases.length-1].rate)||0:0;
-    const oilCost=oilKg*lastOil, other=rice*50, chickenCost=chickenQty*chickenRate;
-    const total=riceCost+masalaCost+oilCost+other+chickenCost;
-    const history=getProductionHistory();
-
-    history.push({
-      date:document.getElementById("productionDate").value||getLocalDateISO(),
-      rice,
-      riceCost,
-      masalaUsed,
-      masalaKg,
-      masalaCost,
-      oilKg,
-      oilCost,
-      other,
-      chickenQty,
-      chickenRate,
-      chickenCost,
-      total,
-      savedAt:new Date().toISOString()
-    });
-
-    localStorage.setItem(PRODUCTION_KEY,JSON.stringify(history));
-    localStorage.setItem("todayProduction",rice);
-    document.getElementById("todayProduction").innerText=rice.toFixed(3)+" KG";
+  function refreshDashboard(){
     formatRiceStock();
     formatOilStock();
     formatChickenStock();
     formatMasalaStock();
 
-    alert("Production Saved! Rice, Oil, Chicken और Prepared Masala Stock deduct हो गया।");
-    renderProductionHistory();
-    refreshDashboard();
-  }
+    renderRecentReports();
 
-  function getReportForDate(date){
-    const productions=getProductionHistory().filter(x=>x.date===date);
-    const productionCost=productions.reduce((sum,x)=>sum+(Number(x.total)||0),0);
-    const riceUsed=productions.reduce((sum,x)=>sum+(Number(x.rice)||0),0);
-    const salesRec=getSalesHistory().find(x=>x.date===date);
-    const sales=Number(salesRec?salesRec.amount:0)||0;
-    const staffRec=getStaffExpenseHistory().find(x=>x.date===date);
-    const staffExpense=Number(staffRec?staffRec.amount:0)||0;
-    return {date, productionCost, riceUsed, sales, staffExpense, productionEntries:productions.length, profit:sales-productionCost-staffExpense};
-  }
+    if(document.getElementById("reportDate")?.value){
+      renderDailyReport();
+    }
 
-  function renderDailyReport(){
-    const date=document.getElementById("reportDate").value;
-    if(!date) return;
-    const r=getReportForDate(date);
-    document.getElementById("reportRiceUsed").innerText=r.riceUsed.toFixed(3)+" KG";
-    document.getElementById("reportProductionCost").innerText="₹"+r.productionCost.toFixed(2);
-    document.getElementById("reportSales").innerText="₹"+r.sales.toFixed(2);
-    document.getElementById("reportProductionEntries").innerText=r.productionEntries;
-    const staffEl=document.getElementById("reportStaffExpense");
-    if(staffEl) staffEl.innerText="₹"+r.staffExpense.toFixed(2);
-    const label=document.getElementById("reportResultLabel");
-    const profitEl=document.getElementById("reportProfit");
-    if(r.sales===0 && r.productionCost===0 && r.staffExpense===0){
-      label.innerText="Net Profit / Loss";
-      profitEl.innerText="₹0.00";
-    } else if(r.profit>=0){
-      label.innerText="Net Profit";
-      profitEl.innerText="₹"+r.profit.toFixed(2);
-    } else {
-      label.innerText="Net Loss";
-      profitEl.innerText="₹"+Math.abs(r.profit).toFixed(2);
+    if(document.getElementById("productionPage")?.style.display!=="none"){
+      updateProductionPreview();
+      renderProductionHistory();
     }
   }
 
-  function renderRecentReports(){
-    const dates=new Set([
-      ...getProductionHistory().map(x=>x.date).filter(Boolean),
-      ...getSalesHistory().map(x=>x.date).filter(Boolean),
-      ...getStaffExpenseHistory().map(x=>x.date).filter(Boolean)
-    ]);
-    const list=Array.from(dates).sort().reverse().slice(0,7).map(getReportForDate);
-    const box=document.getElementById("recentReports");
-    if(!list.length){
-      box.innerHTML='<div class="empty-history">अभी कोई Production या Sales report नहीं है।</div>';
+
+  function showDashboard(){
+    hideAllPages();
+
+    const containers=
+      document.querySelectorAll(".container");
+
+    containers.forEach(el=>{
+      if(
+        !el.classList.contains("settings-page") &&
+        !el.classList.contains("stock-page") &&
+        !el.classList.contains("history-page") &&
+        !el.classList.contains("reports-page")
+      ){
+        el.style.display="block";
+      }
+    });
+
+    setActiveNav("navDashboard");
+
+    refreshDashboard();
+  }
+
+
+  function showPage(id){
+    hideAllPages();
+
+    const page=document.getElementById(id);
+
+    if(page){
+      page.style.display="block";
+    }
+  }
+
+
+  function resetFormDates(){
+    const today=getLocalDateISO();
+
+    [
+      "productionDate",
+      "salesDate",
+      "staffExpenseDate",
+      "reportDate"
+    ].forEach(id=>{
+      const el=document.getElementById(id);
+
+      if(el && !el.value){
+        el.value=today;
+      }
+    });
+  }
+
+
+  function setupLiveCalculations(){
+    [
+      ["riceQty","riceRate",updateRicePreview],
+      ["oilQty","oilRate",updateOilPreview],
+      ["chickenQty","chickenRate",updateChickenPreview]
+    ].forEach(([a,b,fn])=>{
+      const x=document.getElementById(a);
+      const y=document.getElementById(b);
+
+      if(x) x.addEventListener("input",fn);
+      if(y) y.addEventListener("input",fn);
+    });
+
+    [
+      "productionRice",
+      "productionChickenQty",
+      "productionChickenRate"
+    ].forEach(id=>{
+      const el=document.getElementById(id);
+
+      if(el){
+        el.addEventListener(
+          "input",
+          updateProductionPreview
+        );
+      }
+    });
+
+    const salesDate=
+      document.getElementById("salesDate");
+
+    if(salesDate){
+      salesDate.addEventListener(
+        "change",
+        updateSalesPreview
+      );
+    }
+
+    const staffDate=
+      document.getElementById(
+        "staffExpenseDate"
+      );
+
+    if(staffDate){
+      staffDate.addEventListener(
+        "change",
+        updateStaffExpensePreview
+      );
+    }
+  }
+
+
+  function backupAllData(){
+    const data={
+      version:"A1 SBS Backup 1.0",
+      createdAt:new Date().toISOString(),
+
+      ricePurchases:getRicePurchases(),
+      oilPurchases:getOilPurchases(),
+      chickenPurchases:getChickenPurchases(),
+
+      masalaMaster:getMasalaMaster(),
+      masalaBatches:getMasalaBatches(),
+
+      productionHistory:getProductionHistory(),
+      dailySales:getSalesData(),
+      staffExpenses:getStaffExpenses()
+    };
+
+    const blob=new Blob(
+      [JSON.stringify(data,null,2)],
+      {type:"application/json"}
+    );
+
+    const url=URL.createObjectURL(blob);
+
+    const a=document.createElement("a");
+
+    a.href=url;
+    a.download=
+      "A1-SBS-Backup-"+getLocalDateISO()+".json";
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    URL.revokeObjectURL(url);
+
+    alert("Complete SBS Backup तैयार हो गया है।");
+  }
+
+
+  function importBackupFile(){
+    const input=document.createElement("input");
+
+    input.type="file";
+    input.accept=".json,application/json";
+
+    input.onchange=function(e){
+      const file=e.target.files[0];
+
+      if(!file) return;
+
+      const reader=new FileReader();
+
+      reader.onload=function(){
+        try{
+          const data=
+            JSON.parse(reader.result);
+
+          if(
+            !data ||
+            typeof data!=="object"
+          ){
+            throw new Error("Invalid backup");
+          }
+
+          const ok=confirm(
+            "Backup restore करना है?\n\n" +
+            "Current saved data replace हो जाएगा।"
+          );
+
+          if(!ok) return;
+
+          localStorage.setItem(
+            RICE_KEY,
+            JSON.stringify(
+              data.ricePurchases || []
+            )
+          );
+
+          localStorage.setItem(
+            OIL_KEY,
+            JSON.stringify(
+              data.oilPurchases || []
+            )
+          );
+
+          localStorage.setItem(
+            CHICKEN_KEY,
+            JSON.stringify(
+              data.chickenPurchases || []
+            )
+          );
+
+          localStorage.setItem(
+            MASALA_KEY,
+            JSON.stringify(
+              data.masalaMaster || []
+            )
+          );
+
+          localStorage.setItem(
+            MASALA_BATCH_KEY,
+            JSON.stringify(
+              data.masalaBatches || []
+            )
+          );
+
+          localStorage.setItem(
+            PRODUCTION_KEY,
+            JSON.stringify(
+              data.productionHistory || []
+            )
+          );
+
+          localStorage.setItem(
+            "a1DailySales",
+            JSON.stringify(
+              data.dailySales || []
+            )
+          );
+
+          localStorage.setItem(
+            "a1StaffExpenses",
+            JSON.stringify(
+              data.staffExpenses || []
+            )
+          );
+
+          alert(
+            "Backup Successfully Restore हो गया!"
+          );
+
+          location.reload();
+
+        }catch(err){
+          alert(
+            "Backup file सही नहीं है या corrupt है।"
+          );
+        }
+      };
+
+      reader.readAsText(file);
+    };
+
+    input.click();
+  }
+
+
+  function clearAllBusinessData(){
+    const first=confirm(
+      "⚠️ WARNING ⚠️\n\n" +
+      "क्या आप SBS का पूरा पुराना business data delete करना चाहते हैं?"
+    );
+
+    if(!first) return;
+
+    const second=confirm(
+      "यह action Rice, Oil, Chicken, Masala, " +
+      "Production, Sales और Staff Expense records delete करेगा।\n\n" +
+      "पहले Backup लेना बहुत जरूरी है।\n\n" +
+      "क्या फिर भी DELETE करना है?"
+    );
+
+    if(!second) return;
+
+    const third=prompt(
+      "Confirm करने के लिए नीचे DELETE लिखें:"
+    );
+
+    if(third!=="DELETE"){
+      alert("Data delete नहीं किया गया।");
       return;
     }
-    box.innerHTML=list.map(r=>{
-      const result=r.profit>=0?'Profit':'Loss';
-      const amount=Math.abs(r.profit);
-      return `<div class="history-item">
-        <div><b>${r.date}</b><span>Sales ₹${r.sales.toFixed(2)} • Production ₹${r.productionCost.toFixed(2)} • Staff ₹${r.staffExpense.toFixed(2)}</span></div>
-        <div style="text-align:right;"><b>₹${amount.toFixed(2)}</b><span>${result}</span></div>
-      </div>`;
-    }).join("");
+
+    localStorage.removeItem(RICE_KEY);
+    localStorage.removeItem(OIL_KEY);
+    localStorage.removeItem(CHICKEN_KEY);
+    localStorage.removeItem(MASALA_KEY);
+    localStorage.removeItem(MASALA_BATCH_KEY);
+    localStorage.removeItem(PRODUCTION_KEY);
+    localStorage.removeItem("a1DailySales");
+    localStorage.removeItem("a1StaffExpenses");
+
+    alert(
+      "पुराना SBS Business Data पूरी तरह clear हो गया है।\n\n" +
+      "अब system fresh state में शुरू होगा।"
+    );
+
+    location.reload();
   }
 
-  function openReports(){
-    setActiveNav("navReports");
-    document.querySelector(".container:not(.settings-page)").style.display="none";
-    ["settingsPage","masalaPage","stockPage","historyPage","productionPage","salesPage","staffExpensePage","entryMenuPage"].forEach(id=>document.getElementById(id).style.display="none");
-    document.getElementById("reportsPage").style.display="block";
-    document.getElementById("reportDate").value=getLocalDateISO();
-    renderDailyReport();
+
+  function initializeSBS(){
+    resetFormDates();
+
+    setupLiveCalculations();
+
+    renderMasalaRows();
+    renderMasalaMasterHistory();
+
+    renderRiceHistory();
+    renderOilHistory();
+    renderChickenHistory();
+
+    renderProductionHistory();
     renderRecentReports();
-  }
 
-  function getLocalDateISO(){
-    const d=new Date();
-    const y=d.getFullYear();
-    const m=String(d.getMonth()+1).padStart(2,"0");
-    const day=String(d.getDate()).padStart(2,"0");
-    return `${y}-${m}-${day}`;
-  }
+    updateRicePreview();
+    updateOilPreview();
+    updateChickenPreview();
+    updateProductionPreview();
 
-  function openEntryMenu(){
-    setActiveNav("navEntry");
-    hideAllPages();
-    document.getElementById("entryMenuPage").style.display="block";
-  }
-
-  function openStaffExpense(){
-    setActiveNav("navEntry");
-    hideAllPages();
-    const el=document.getElementById("staffExpensePage");
-    el.style.display="block";
-    document.getElementById("staffExpenseDate").value=getLocalDateISO();
-    document.getElementById("staffExpenseAmount").value="";
+    updateSalesPreview();
     updateStaffExpensePreview();
-  }
 
-  function getStaffExpenseHistory(){try{return JSON.parse(localStorage.getItem("a1StaffExpenseHistory")||"[]")}catch(e){return []}}
-  function updateStaffExpensePreview(){
-    const d=document.getElementById("staffExpenseDate").value;
-    const item=getStaffExpenseHistory().find(x=>x.date===d);
-    document.getElementById("savedStaffExpensePreview").innerText="₹"+Number(item?item.amount:0).toFixed(2);
-  }
-
-  function saveStaffExpense(){
-    const date=document.getElementById("staffExpenseDate").value;
-    const amount=Number(document.getElementById("staffExpenseAmount").value);
-    if(!date){alert("Date चुनें");return;}
-    if(isNaN(amount)||amount<0){alert("कृपया सही Staff Payment Amount दर्ज करें");return;}
-    let h=getStaffExpenseHistory();
-    const i=h.findIndex(x=>x.date===date);
-    const rec={date,amount,savedAt:new Date().toISOString()};
-    if(i>=0)h[i]=rec;else h.push(rec);
-    localStorage.setItem("a1StaffExpenseHistory",JSON.stringify(h));
-    updateStaffExpensePreview();
-    alert("Staff Expense ₹"+amount.toFixed(2)+" Successfully Saved!");
-  }
-
-  function viewStaffExpenseHistory(){
-    const b=document.getElementById("staffExpenseHistoryBox");
-    const h=getStaffExpenseHistory().slice().reverse();
-    b.style.display="block";
-    b.innerHTML=h.length?h.map(x=>`<div class="history-item"><div><b>${x.date}</b><span>Daily Staff Payment</span></div><div><b>₹${Number(x.amount).toFixed(2)}</b></div></div>`).join(""): '<div class="empty-history">अभी कोई Staff Expense record नहीं है।</div>';
-  }
-
-  function openExpense() {
-    let expense = prompt("आज का Expense Amount दर्ज करें (₹):");
-
-    if (expense === null) {
-        return;
-    }
-
-    expense = Number(expense);
-
-    if (isNaN(expense) || expense < 0) {
-        alert("कृपया सही Expense Amount दर्ज करें");
-        return;
-    }
-
-    document.getElementById("totalExpense").innerText = "₹" + expense;
-    localStorage.setItem("totalExpense", expense);
-    updateProfit();
-    alert("Expense ₹" + expense + " Successfully Saved!");
-  }
-
-  window.onload = function() {
-    ensureRiceCosts();
     refreshDashboard();
-    formatRiceStock();
-    formatOilStock();
-    formatChickenStock();
-  };
+  }
+
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+      initializeSBS();
+    }
+  );
 
 </script>
+
 </body>
 </html>
-  
+    
