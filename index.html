@@ -425,12 +425,12 @@
       <h3>Last Chicken Purchase</h3>
       <div id="chickenHistory"></div>
       <button class="view-all-btn" onclick="openHistoryPage('chicken')">View All Chicken History →</button>
-              
-</div>
+    </div>
     <div class="master-card">
       <span style="font-size:30px;">🌶️</span>
       <h3>Prepared Masala Stock Entry</h3>
-      <p>Masala Master केवल recipe और cost calculate करता है। तैयार मसाला Stock में अपने-आप नहीं आएगा। यहाँ actual तैयार/खरीदा हुआ Masala manually enter करें।</p>
+            
+<p>Masala Master केवल recipe और cost calculate करता है। तैयार मसाला Stock में अपने-आप नहीं आएगा। यहाँ actual तैयार/खरीदा हुआ Masala manually enter करें।</p>
       <div class="stock-big"><small>Current Prepared Masala Stock</small><b id="masalaStock">0.000 KG</b></div>
       <div class="form-grid">
         <div class="form-group"><label>Quantity (KG)</label><input id="masalaStockQty" type="number" min="0" step="0.001" placeholder="e.g. 5"></div>
@@ -853,8 +853,7 @@
   }
 
   function getMasalaBatches(){
-    
-return safeJSON(MASALA_BATCH_KEY, []);
+    return safeJSON(MASALA_BATCH_KEY, []);
   }
 
   function saveMasalaBatches(data){
@@ -862,7 +861,8 @@ return safeJSON(MASALA_BATCH_KEY, []);
   }
 
   function getRiceStock(){
-    return getRicePurchases().reduce((sum,x)=>{
+          
+return getRicePurchases().reduce((sum,x)=>{
       return sum + (Number(x.qty) || 0);
     },0) - getProductionHistory().reduce((sum,x)=>{
       return sum + (Number(x.rice) || 0);
@@ -1281,8 +1281,7 @@ return safeJSON(MASALA_BATCH_KEY, []);
     if(rate<0){
       alert("कृपया Chicken Rate सही दर्ज करें");
       return;
-      
-}
+    }
 
     const h=getChickenPurchases();
 
@@ -1294,7 +1293,7 @@ return safeJSON(MASALA_BATCH_KEY, []);
       cost:qty*rate,
       savedAt:new Date().toISOString()
     });
-
+      
     localStorage.setItem(CHICKEN_KEY,JSON.stringify(h));
 
     document.getElementById("chickenQty").value="";
@@ -1709,8 +1708,7 @@ return safeJSON(MASALA_BATCH_KEY, []);
       riceRate=Number(last.rate)||110;
     }
 
-      
-const riceCost=rice*riceRate;
+    const riceCost=rice*riceRate;
 
     const masterTotals=getMasalaMasterTotals();
     const masalaRate=masterTotals.kg>0
@@ -1726,7 +1724,8 @@ const riceCost=rice*riceRate;
     let oilRate=0;
 
     if(oilPurchases.length){
-      const lastOil=oilPurchases[oilPurchases.length-1];
+      
+const lastOil=oilPurchases[oilPurchases.length-1];
       oilRate=Number(lastOil.rate)||0;
     }
 
@@ -2137,8 +2136,7 @@ const riceCost=rice*riceRate;
           <b>${money(x.amount)}</b>
 
           <button
-            
-onclick="editSale(${x.id})"
+            onclick="editSale(${x.id})"
             style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;margin-top:5px;">
             Edit
           </button>
@@ -2158,7 +2156,8 @@ onclick="editSale(${x.id})"
     const list=getSalesData();
 
     const index=list.findIndex(
-      x=>Number(x.id)===Number(id)
+      
+x=>Number(x.id)===Number(id)
     );
 
     if(index===-1){
@@ -2565,8 +2564,7 @@ onclick="editSale(${x.id})"
       productions.length
     );
 
-      
-set(
+    set(
       "reportStaffExpense",
       money(staffExpense)
     );
@@ -2590,7 +2588,8 @@ set(
 
     renderRecentReports();
   }
-      function renderRecentReports(){
+      
+function renderRecentReports(){
     const box=document.getElementById("recentReports");
     if(!box) return;
 
@@ -2993,7 +2992,7 @@ set(
 
     setupLiveCalculations();
 
-renderMasalaRows();
+    renderMasalaRows();
     renderMasalaMasterHistory();
 
     renderRiceHistory();
@@ -3248,8 +3247,35 @@ renderMasalaRows();
     const candidate={id:"preview",date:getLocalDateISO(),rice,chickenQty:chicken,savedAt:new Date().toISOString()};
     const result=buildLedger(getProductionHistory().concat(candidate)); const p=result.calculated.find(x=>String(x.id)==="preview");
     const set=(id,v)=>{const e=document.getElementById(id);if(e)e.innerText=v;};
-    if(!p){return;}
-    set("prodRiceCost",money(p.riceCost));set("prodMasalaUsed",(p.masalaUsed*1000).toFixed(0)+" g");set("prodMasalaCost",money(p.masalaCost));set("prodOilUsed",(p.oilKg*1000).toFixed(0)+" g");set("prodOilCost",money(p.oilCost));set("prodOtherCost",money(p.otherCost));set("prodChickenCost",money(p.chickenCost));set("prodTotalCost",money(p.totalCost));
+    if(!p)return;
+
+    const e=p.fifoError||{};
+    // Check stock BEFORE the preview transaction is consumed.
+    const riceStock=currentStock("rice");
+    const oilStock=currentStock("oil");
+    const chickenStock=currentStock("chicken");
+    const masalaStock=currentStock("masala");
+
+    const status=(available,required,shortage)=>{
+      if(required<=0)return null;
+      if(available<=1e-9)return "Stock में नहीं है";
+      if(shortage>1e-9)return `Stock पर्याप्त नहीं है (${shortage.toFixed(3)} KG कम)`;
+      return null;
+    };
+
+    const riceStatus=status(riceStock,rice,e.rice);
+    const oilStatus=status(oilStock,p.oilKg,e.oil);
+    const masalaStatus=status(masalaStock,p.masalaUsed,e.masala);
+    const chickenStatus=status(chickenStock,chicken,e.chicken);
+
+    set("prodRiceCost",riceStatus||money(p.riceCost));
+    set("prodMasalaUsed",masalaStatus||((p.masalaUsed*1000).toFixed(0)+" g"));
+    set("prodMasalaCost",masalaStatus||money(p.masalaCost));
+    set("prodOilUsed",oilStatus||((p.oilKg*1000).toFixed(0)+" g"));
+    set("prodOilCost",oilStatus||money(p.oilCost));
+    set("prodOtherCost",money(p.otherCost));
+    set("prodChickenCost",chickenStatus||money(p.chickenCost));
+    set("prodTotalCost",p.fifoValid?money(p.totalCost):"Stock उपलब्ध नहीं है");
   };
 
   window.editProduction=function(id){
@@ -3377,11 +3403,21 @@ renderMasalaRows();
     showHistoryTab(type||"rice");
   };
   window.showHistoryTab=function(type){
-    ["rice","oil","chicken","masala"].forEach(t=>{
+    const valid=["rice","oil","chicken","masala"];
+    if(!valid.includes(type))type="rice";
+
+    valid.forEach(t=>{
       const box=document.getElementById(t+"HistoryFull");
       const tab=document.getElementById(t+"HistoryTab");
       if(box)box.style.display=(type===t)?"block":"none";
-      if(tab)tab.classList.toggle("active",type===t);
+      if(tab){
+        tab.classList.toggle("active",type===t);
+        tab.style.display=(type===t)?"block":"none";
+      }
+    });
+
+    document.querySelectorAll("#historyPage > .master-card").forEach(card=>{
+      card.style.display=card.querySelector("#"+type+"HistoryFull")?"block":"none";
     });
   };
   window.renderCompleteHistory=function(){
