@@ -281,6 +281,20 @@
       <div id="dataManagerList" style="margin-top:12px;"></div>
     </div>
     <div class="master-card">
+  <span style="font-size:30px;">💾</span>
+  <h3>Data Backup & Restore</h3>
+  <p>अपने सभी SBS business data का सुरक्षित Backup लें या पहले से लिया हुआ Backup Restore करें।</p>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+    <button class="open-master" onclick="backupAllData()">💾 Backup / Export Data</button>
+    <button class="open-master" onclick="importBackupFile()">📥 Restore / Import Data</button>
+  </div>
+
+  <p style="color:#b00000;font-size:12px;margin-top:10px;">
+    ⚠️ Restore करने पर वर्तमान saved data replace हो सकता है। Restore से पहले Backup जरूर रखें।
+  </p>
+    </div>
+    <div class="master-card">
       <h3>Fresh Start</h3>
       <p>यह सिर्फ business transaction data हटाएगा। <b>Masala Master recipe सुरक्षित रहेगी।</b></p>
       <button onclick="clearBusinessData()" style="width:100%;padding:13px;border:0;border-radius:10px;background:#b00000;color:#fff;font-size:16px;font-weight:700;">🧹 Clear All Testing / Business Data</button>
