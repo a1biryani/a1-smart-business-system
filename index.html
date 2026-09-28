@@ -3149,9 +3149,42 @@ function renderRecentReports(){
   function oilTransactionLedger(){
     const batches=purchases("oil").map(x=>({...x,remaining:n(x.qty)}));
     const events=[];
-    getProductionHistory().forEach(p=>events.push({date:p.date,savedAt:p.savedAt||p.id||0,type:"production",
+    getProductionHistory().forEach(p=>events.push({date:p.date,savedAt:p.savedAt||p.id||0,type:"production",id:p.id,qty:n(p.rice)*OIL_PER_RICE_KG}));
+    arr(EXTRA_OIL_KEY).forEach(x=>events.push({date:x.date,savedAt:x.savedAt||x.id||0,type:"extra",id:x.id,qty:n(x.qty)}));
+    events.sort((a,b)=>{const d=String(a.date||"").localeCompare(String(b.date||""));if(d!==0)return d;return String(a.savedAt).localeCompare(String(b.savedAt));});
+    const usage=[];
+    for(const e of events){
+      const r=fifoConsume(batches,e.qty);
+      usage.push({...e,cost:r.cost,allocations:r.allocations,shortage:r.shortage,ok:r.ok});
+    }
+    return {batches,usage};
+  }
 
-                                                     function renderExtraExpenseHistory(){
+  function currentStock(type){
+    if(type==="oil"){
+      const l=oilTransactionLedger();
+      return l.batches.reduce((s,x)=>s+Math.max(0,n(x.remaining)),0);
+    }
+    const l=ledger();
+    const list=l.batches[type];
+    return list.reduce((s,x)=>s+Math.max(0,n(x.remaining)),0);
+  }
+  function stockValue(type){
+    if(type==="oil"){
+      const l=oilTransactionLedger();
+      return l.batches.reduce((s,x)=>s+Math.max(0,n(x.remaining))*n(x.rate),0);
+    }
+    const l=ledger();
+    return l.batches[type].reduce((s,x)=>s+Math.max(0,n(x.remaining))*n(x.rate),0);
+  }
+
+  function extraExpenseList(){ return arr(EXTRA_EXPENSE_KEY).slice().sort(sortBatch); }
+  function extraOilList(){ return arr(EXTRA_OIL_KEY).slice().sort(sortBatch); }
+
+  let extraExpenseHistoryAll=false;
+  let extraOilHistoryAll=false;
+
+  function renderExtraExpenseHistory(){
     const box=document.getElementById("extraExpenseHistory"); if(!box)return;
     const all=extraExpenseList().slice().reverse();
     const list=extraExpenseHistoryAll?all:all.slice(0,1);
@@ -3521,7 +3554,7 @@ function renderRecentReports(){
   window.updateOilPreview=function(){const q=n(document.getElementById("oilQty")?.value),r=n(document.getElementById("oilRate")?.value);const e=document.getElementById("oilPurchaseCost"),s=document.getElementById("oilAfterStock");if(e)e.innerText=money(q*r);if(s)s.innerText=(currentStock("oil")+q).toFixed(3)+" KG";};
   window.updateChickenPreview=function(){const q=n(document.getElementById("chickenQty")?.value),r=n(document.getElementById("chickenRate")?.value);const e=document.getElementById("chickenPurchaseCost"),s=document.getElementById("chickenAfterStock");if(e)e.innerText=money(q*r);if(s)s.innerText=(currentStock("chicken")+q).toFixed(3)+" KG";};
   window.renderRiceHistory=function(){const b=document.getElementById("riceHistory");if(!b)return;const h=arr(RICE_KEY).slice().sort(sortBatch).reverse();b.innerHTML=h.length?h.slice(0,1).map(x=>`<div class="history-item"><div><b>${x.date}</b><span>${n(x.qty).toFixed(3)} KG × ₹${n(x.rate).toFixed(2)}/KG</span></div><div style="text-align:right"><b>${money(x.cost)}</b><button onclick="editPurchase('rice',${x.id})" style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;">Edit</button><button onclick="deletePurchase('rice',${x.id})" style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;">Delete</button></div></div>`).join(""):'<div class="empty-history">अभी कोई Rice Purchase record नहीं है।</div>';};
-  window.renderOilHistory=function(){const b=document.getElementById("oilHistory");if(!b)return;const h=arr(OIL_KEY).slice().sort(sortBatch).reverse();b.innerHTML=h.length?h.slice(0,1).map(x=>`<div class="history-item"><div><b>${x.date}</b><span>${n(x.qty).toFixed(3)} KG × ₹${n(x.rate).toFixed(2)}/KG</span></div><div style="text-align:right"><b>${money(x.cost)}</b><button onclick="editPurchase('oil',${x.id})" style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;">Edit</button><button onclick="deletePurchase('oil',${x.id})" style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;">Delete</button></div></div>`).join(""):'<div class="empty-history">अभी कोई Oil Purchase record नहीं है।</div>'
+  window.renderOilHistory=function(){const b=document.getElementById("oilHistory");if(!b)return;const h=arr(OIL_KEY).slice().sort(sortBatch).reverse();b.innerHTML=h.length?h.slice(0,1).map(x=>`<div class="history-item"><div><b>${x.date}</b><span>${n(x.qty).toFixed(3)} KG × ₹${n(x.rate).toFixed(2)}/KG</span></div><div style="text-align:right"><b>${money(x.cost)}</b><button onclick="editPurchase('oil',${x.id})" style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;">Edit</button><button onclick="deletePurchase('oil',${x.id})" style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;">Delete</button></div></div>`).join(""):'<div class="empty-history">अभी कोई Oil Purchase record नहीं है।</div>';};
 
     function productionHistoryMarkup(limit){
     const calculated=buildLedger(getProductionHistory()).calculated.slice().sort(sortBatch).reverse();
