@@ -559,11 +559,6 @@
         </div>
 
         <div class="mini">
-          Other Cost
-          <b id="prodOtherCost">₹0.00</b>
-        </div>
-
-        <div class="mini">
           Chicken Cost
           <b id="prodChickenCost">₹0.00</b>
         </div>
@@ -577,7 +572,7 @@
       <button class="save-btn" onclick="saveProduction()">💾 Save Production</button>
 
       <p class="note">
-        Production rule: 1 KG Rice में 130g Masala, 220g Oil और ₹20 Other Cost।
+        Production rule: 1 KG Rice में 130g Masala और 220g Oil।
         Rice, Oil, Chicken और Prepared Masala Stock FIFO के अनुसार consume होंगे। Chicken 1 KG Rice पर fixed नहीं है।
       </p>
     </div>
@@ -587,8 +582,8 @@
       <div id="productionHistoryBox"></div>
       <button class="view-all-btn" onclick="openHistoryPage('production')">📜 View All Production History →</button>
     </div>
-  </div>
-
+          </div>
+  
 
   <div class="container settings-page" id="salesPage" style="display:none;">
     <div class="settings-header">
@@ -668,6 +663,44 @@
   </div>
 
 
+  <div class="container settings-page" id="extraExpensePage" style="display:none;">
+    <div class="settings-header">
+      <button class="back-btn" onclick="openEntryMenu()">← Back</button>
+      <div><h2>Extra Expense 💸</h2><p style="font-size:12px;color:#666;margin-top:4px;">Actual market / business expense entry</p></div>
+    </div>
+    <div class="master-card">
+      <div class="form-grid">
+        <div class="form-group"><label>Date</label><input id="extraExpenseDate" type="date"></div>
+        <div class="form-group"><label>Expense Category</label><select id="extraExpenseCategory">
+          <option value="Pyaj">🧅 Pyaj</option><option value="Lahsun">🧄 Lahsun</option><option value="Adrak">🫚 Adrak</option><option value="Mirch">🌶️ Mirch</option><option value="Packing">📦 Packing</option><option value="Other">📌 Other</option>
+        </select></div>
+        <div class="form-group"><label>Amount ₹</label><input id="extraExpenseAmount" type="number" min="0" step="0.01" placeholder="e.g. 500"></div>
+        <div class="form-group"><label>Note</label><input id="extraExpenseNote" type="text" placeholder="e.g. market purchase"></div>
+      </div>
+      <button class="save-btn" onclick="saveExtraExpense()">💾 Save Extra Expense</button>
+      <div class="master-card" style="margin-top:12px;padding:12px;"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><h3 style="margin:0;">Recent Extra Expenses</h3><button type="button" class="view-all-btn" onclick="viewExtraExpenseHistory()">📜 View All</button></div><div id="extraExpenseHistory"></div></div>
+      <p class="note">यह खर्च Daily Profit/Loss में नहीं घटेगा। Monthly Report में पूरे महीने का actual Extra Expense Net Profit से minus होगा।</p>
+    </div>
+  </div>
+
+  <div class="container settings-page" id="extraOilPage" style="display:none;">
+    <div class="settings-header">
+      <button class="back-btn" onclick="openEntryMenu()">← Back</button>
+      <div><h2>Extra Oil Usage 🛢️</h2><p style="font-size:12px;color:#666;margin-top:4px;">Oil used outside the 220g/kg rice production rule</p></div>
+    </div>
+    <div class="master-card">
+      <div class="form-grid">
+        <div class="form-group"><label>Date</label><input id="extraOilDate" type="date"></div>
+        <div class="form-group"><label>Oil Used (KG)</label><input id="extraOilQty" type="number" min="0" step="0.001" placeholder="e.g. 0.500"></div>
+        <div class="form-group"><label>Note</label><input id="extraOilNote" type="text" placeholder="e.g. Pyaj Fry"></div>
+      </div>
+      <button class="save-btn" onclick="saveExtraOil()">💾 Save Extra Oil Usage</button>
+      <div class="stock-big" style="margin-top:12px;"><small>Current Oil Stock After Extra Usage</small><b id="extraOilCurrentStock">0.000 KG</b></div>
+      <div class="master-card" style="margin-top:12px;padding:12px;"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><h3 style="margin:0;">Recent Extra Oil Usage</h3><button type="button" class="view-all-btn" onclick="viewExtraOilHistory()">📜 View All</button></div><div id="extraOilHistory"></div></div>
+      <p class="note">Production का 220g/kg Rice rule अलग रहेगा। यहाँ इस्तेमाल हुआ Oil Stock से अलग transaction के रूप में minus होगा और उसकी actual cost Monthly Report में आएगी।</p>
+    </div>
+  </div>
+
   <div class="container settings-page" id="entryMenuPage" style="display:none;">
     <div class="settings-header">
       <button class="back-btn" onclick="showDashboard()">← Back</button>
@@ -695,6 +728,18 @@
         <h3>Staff Expense</h3>
         <p>Actual daily staff payment enter करें</p>
       </div>
+
+      <div class="business-card" onclick="openExtraExpense()" style="cursor:pointer;">
+        <span>💸</span>
+        <h3>Extra Expense</h3>
+        <p>Pyaj • Lahsun • Adrak • Mirch • Packing • Other</p>
+      </div>
+
+      <div class="business-card" onclick="openExtraOil()" style="cursor:pointer;">
+        <span>🛢️</span>
+        <h3>Extra Oil Usage</h3>
+        <p>Pyaj fry या दूसरे काम में इस्तेमाल Oil</p>
+      </div>
     </div>
   </div>
 
@@ -712,6 +757,7 @@
       <div class="form-group">
         <label>Select Date</label>
         <input id="reportDate" type="date" onchange="renderDailyReport()">
+        <div id="reportDateQuickList" style="display:flex;gap:6px;overflow-x:auto;margin-top:7px;padding-bottom:2px;"></div>
       </div>
 
       <div class="report-grid">
@@ -755,6 +801,23 @@
       <h3>Recent Reports</h3>
       <div id="recentReports"></div>
     </div>
+      <div class="master-card">
+      <h3>Monthly Report 📅</h3>
+      <div class="form-group"><label>Select Month</label><input id="reportMonth" type="month" onchange="renderMonthlyReport()"></div>
+      <div class="report-grid">
+        <div class="mini">Total Sales<b id="monthlySales">₹0.00</b></div>
+        <div class="mini">Production Cost<b id="monthlyProductionCost">₹0.00</b></div>
+        <div class="mini">Staff Expense<b id="monthlyStaffExpense">₹0.00</b></div>
+        <div class="mini">Extra Oil Cost<b id="monthlyExtraOilCost">₹0.00</b></div>
+        <div class="mini">Extra Expense<b id="monthlyExtraExpense">₹0.00</b></div>
+        <div class="mini">Rice Used<b id="monthlyRiceUsed">0.000 KG</b></div>
+        <div class="mini">Extra Oil Used<b id="monthlyExtraOilUsed">0.000 KG</b></div>
+      </div>
+      <div class="report-total"><small id="monthlyResultLabel">Monthly Net Profit / Loss</small><b id="monthlyProfit">₹0.00</b></div>
+      <p class="report-note">Monthly Net Profit = Total Sales − Production Cost − Staff Expense − Extra Oil Cost − Extra Expense.</p>
+      <div class="master-card" style="margin-top:12px;padding:12px;"><h3 style="margin-top:0;">Extra Expense Breakdown</h3><div id="monthlyExpenseBreakdown"></div></div>
+
+    </div>
   </div>
 
 
@@ -778,8 +841,9 @@
     <div class="nav-item" id="navSettings" onclick="openSettings()">
       <span>⚙️</span>Settings
     </div>
-  </div>
-  <script>
+                                  </div>
+  
+    <script>
 
   const RICE_KEY = "a1RicePurchases";
   const OIL_KEY = "a1OilPurchases";
@@ -1029,6 +1093,8 @@ return getRicePurchases().reduce((sum,x)=>{
       "salesPage",
       "reportsPage",
       "staffExpensePage",
+      "extraExpensePage",
+      "extraOilPage",
       "entryMenuPage"
     ].forEach(id=>{
       const el = document.getElementById(id);
@@ -1206,7 +1272,6 @@ return getRicePurchases().reduce((sum,x)=>{
     if(costEl) costEl.innerText=money(cost);
     if(stockEl) stockEl.innerText=stock.toFixed(3)+" KG";
   }
-
   function saveRicePurchase(){
     const qty=Number(document.getElementById("riceQty").value)||0;
     const rate=Number(document.getElementById("riceRate").value)||0;
@@ -1746,14 +1811,12 @@ const lastOil=oilPurchases[oilPurchases.length-1];
     const oilCost=oilUsed*oilRate;
 
     const chickenCost=chickenQty*chickenRate;
-    const otherCost=rice*20;
 
     const total=
       riceCost+
       masalaCost+
       oilCost+
-      chickenCost+
-      otherCost;
+      chickenCost;
 
     const set=(id,value)=>{
       const el=document.getElementById(id);
@@ -1765,11 +1828,9 @@ const lastOil=oilPurchases[oilPurchases.length-1];
     set("prodMasalaCost",money(masalaCost));
     set("prodOilUsed",(oilUsed*1000).toFixed(0)+" g");
     set("prodOilCost",money(oilCost));
-    set("prodOtherCost",money(otherCost));
     set("prodChickenCost",money(chickenCost));
     set("prodTotalCost",money(total));
   }
-
 
   function saveProduction(){
     const date=document.getElementById("productionDate").value || getLocalDateISO();
@@ -1813,14 +1874,12 @@ const lastOil=oilPurchases[oilPurchases.length-1];
     const masalaCost=masalaUsed*masalaRate;
     const oilCost=oilUsed*oilRate;
     const chickenCost=chickenQty*chickenRate;
-    const otherCost=rice*20;
 
     const totalCost=
       riceCost+
       masalaCost+
       oilCost+
-      chickenCost+
-      otherCost;
+      chickenCost;
 
     const history=getProductionHistory();
 
@@ -1839,7 +1898,6 @@ const lastOil=oilPurchases[oilPurchases.length-1];
       oilKg:oilUsed,
       oilRate,
       oilCost,
-      otherCost,
       totalCost,
       savedAt:new Date().toISOString()
     });
@@ -1951,14 +2009,12 @@ const lastOil=oilPurchases[oilPurchases.length-1];
     const masalaCost=masalaUsed*masalaRate;
     const oilCost=oilUsed*oilRate;
     const chickenCost=chickenQty*chickenRate;
-    const otherCost=rice*20;
 
     const totalCost=
       riceCost+
       masalaCost+
       oilCost+
-      chickenCost+
-      otherCost;
+      chickenCost;
 
     item.rice=rice;
     item.chickenQty=chickenQty;
@@ -2352,7 +2408,6 @@ x=>Number(x.id)===Number(id)
     alert("Staff Expense Successfully Saved!");
   }
 
-
   function viewStaffExpenseHistory(){
     const box=document.getElementById(
       "staffExpenseHistoryBox"
@@ -2473,136 +2528,61 @@ x=>Number(x.id)===Number(id)
 
   function openEntryMenu(){
     hideAllPages();
-
-    const page=document.getElementById(
-      "entryMenuPage"
-    );
-
+    const page=document.getElementById("entryMenuPage");
     if(page) page.style.display="block";
-
     setActiveNav("navEntry");
   }
 
 
+  function getAllReportDates(){
+    return [...new Set([
+      ...getProductionHistory().map(x=>String(x.date||"").slice(0,10)),
+      ...getSalesData().map(x=>String(x.date||"").slice(0,10)),
+      ...getStaffExpenses().map(x=>String(x.date||"").slice(0,10)),
+      ...safeJSON("a1ExtraExpenses",[]).map(x=>String(x.date||"").slice(0,10)),
+      ...safeJSON("a1ExtraOilUsage",[]).map(x=>String(x.date||"").slice(0,10))
+    ].filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)))].sort().reverse();
+  }
+
+  function getAllReportMonths(){
+    return [...new Set(getAllReportDates().map(x=>x.slice(0,7)))].sort().reverse();
+  }
+
+  function prepareReportsView(forceLatest=false){
+    const dates=getAllReportDates();
+    const latest=dates.length ? dates[0] : getLocalDateISO();
+    const months=getAllReportMonths();
+    const latestMonth=months.length ? months[0] : latest.slice(0,7);
+    const date=document.getElementById("reportDate");
+    const month=document.getElementById("reportMonth");
+
+    // Always keep a real, valid date/month in the controls. On Android Chrome the
+    // browser can restore a stale form value, so when Reports opens we deliberately
+    // reset to the latest actual transaction date/month.
+    if(date && (forceLatest || !/^\d{4}-\d{2}-\d{2}$/.test(date.value))) date.value=latest;
+    if(month && (forceLatest || !/^\d{4}-\d{2}$/.test(month.value))) month.value=latestMonth;
+    const quick=document.getElementById("reportDateQuickList");
+    if(quick){
+      quick.innerHTML=dates.slice(0,10).map(d=>`<button type="button" data-report-date="${d}" style="border:1px solid #bbb;background:#fff;border-radius:8px;padding:5px 8px;font-size:11px;white-space:nowrap;">${d}</button>`).join("");
+      quick.querySelectorAll("[data-report-date]").forEach(btn=>btn.addEventListener("click",()=>{
+        if(date) date.value=btn.getAttribute("data-report-date");
+        if(window.renderDailyReport) window.renderDailyReport();
+      }));
+    }
+  }
+
   function openReports(){
     hideAllPages();
-
-    const page=document.getElementById(
-      "reportsPage"
-    );
-
+    const page=document.getElementById("reportsPage");
     if(page) page.style.display="block";
-
     setActiveNav("navReports");
-
-    const date=document.getElementById(
-      "reportDate"
-    );
-
-    if(date && !date.value){
-      date.value=getLocalDateISO();
-    }
-
-    renderDailyReport();
+    prepareReportsView(true);
+    if(window.renderDailyReport) window.renderDailyReport();
+    if(window.renderMonthlyReport) window.renderMonthlyReport();
   }
+  window.openReports=openReports;
 
 
-  function renderDailyReport(){
-    const date=
-      document.getElementById(
-        "reportDate"
-      )?.value;
-
-    if(!date) return;
-
-    const productions=
-      getProductionHistory().filter(
-        x=>x.date===date
-      );
-
-    const sales=
-      getSalesData().find(
-        x=>x.date===date
-      );
-
-    const staff=
-      getStaffExpenses().find(
-        x=>x.date===date
-      );
-
-    const riceUsed=
-      productions.reduce(
-        (sum,x)=>sum+(Number(x.rice)||0),
-        0
-      );
-
-    const productionCost=
-      productions.reduce(
-        (sum,x)=>sum+(Number(x.totalCost)||0),
-        0
-      );
-
-    const totalSales=
-      sales ? Number(sales.amount)||0 : 0;
-
-    const staffExpense=
-      staff ? Number(staff.amount)||0 : 0;
-
-    const profit=
-      totalSales-
-      productionCost-
-      staffExpense;
-
-    const set=(id,value)=>{
-      const el=document.getElementById(id);
-      if(el) el.innerText=value;
-    };
-
-    set(
-      "reportRiceUsed",
-      riceUsed.toFixed(3)+" KG"
-    );
-
-    set(
-      "reportProductionCost",
-      money(productionCost)
-    );
-
-    set(
-      "reportSales",
-      money(totalSales)
-    );
-
-    set(
-      "reportProductionEntries",
-      productions.length
-    );
-
-    set(
-      "reportStaffExpense",
-      money(staffExpense)
-    );
-
-    set(
-      "reportProfit",
-      money(profit)
-    );
-
-    const label=
-      document.getElementById(
-        "reportResultLabel"
-      );
-
-    if(label){
-      label.innerText=
-        profit>=0
-        ? "Net Profit"
-        : "Net Loss";
-    }
-
-    renderRecentReports();
-  }
-      
 function renderRecentReports(){
     const box=document.getElementById("recentReports");
     if(!box) return;
@@ -2618,6 +2598,12 @@ function renderRecentReports(){
     });
 
     getStaffExpenses().forEach(x=>{
+      if(x.date) dates.add(x.date);
+    });
+    extraExpenseList().forEach(x=>{
+      if(x.date) dates.add(x.date);
+    });
+    extraOilList().forEach(x=>{
       if(x.date) dates.add(x.date);
     });
 
@@ -2811,7 +2797,7 @@ function renderRecentReports(){
 
   function backupAllData(){
     const data={
-      version:"A1 SBS Backup 1.0",
+      version:"A1 SBS Backup 2.0",
       createdAt:new Date().toISOString(),
 
       ricePurchases:getRicePurchases(),
@@ -2819,11 +2805,16 @@ function renderRecentReports(){
       chickenPurchases:getChickenPurchases(),
 
       masalaMaster:getMasalaMaster(),
+      masalaMasterHistory:safeJSON("a1MasalaMasterHistory",[]),
       masalaBatches:getMasalaBatches(),
 
       productionHistory:getProductionHistory(),
       dailySales:getSalesData(),
-      staffExpenses:getStaffExpenses()
+      staffExpenses:getStaffExpenses(),
+
+      // New professional accounting transactions
+      extraOilUsage:safeJSON("a1ExtraOilUsage",[]),
+      extraExpenses:safeJSON("a1ExtraExpenses",[])
     };
 
     const blob=new Blob(
@@ -2909,12 +2900,12 @@ function renderRecentReports(){
             )
           );
 
-          localStorage.setItem(
-            MASALA_BATCH_KEY,
-            JSON.stringify(
-              data.masalaBatches || []
-            )
-          );
+          const restoredMasalaBatches = Array.isArray(data.masalaBatches) ? data.masalaBatches : [];
+          localStorage.setItem(MASALA_BATCH_KEY, JSON.stringify(restoredMasalaBatches));
+          // New engine also reads prepared-masala purchases. Keep both keys compatible.
+          if(Object.prototype.hasOwnProperty.call(data,"masalaBatches")){
+            localStorage.setItem("a1PreparedMasalaPurchases", JSON.stringify(restoredMasalaBatches));
+          }
 
           localStorage.setItem(
             PRODUCTION_KEY,
@@ -2937,8 +2928,38 @@ function renderRecentReports(){
             )
           );
 
+          // Restore professional accounting data added in Backup 2.0.
+          // Older Backup 1.0 files remain compatible and simply restore empty arrays.
+          localStorage.setItem(
+            "a1MasalaMasterHistory",
+            JSON.stringify(
+              Object.prototype.hasOwnProperty.call(data,"masalaMasterHistory") ? (data.masalaMasterHistory || []) : safeJSON("a1MasalaMasterHistory",[])
+            )
+          );
+
+          localStorage.setItem(
+            "a1ExtraOilUsage",
+            JSON.stringify(
+              Object.prototype.hasOwnProperty.call(data,"extraOilUsage") ? (data.extraOilUsage || []) : safeJSON("a1ExtraOilUsage",[])
+            )
+          );
+
+          localStorage.setItem(
+            "a1ExtraExpenses",
+            JSON.stringify(
+              Object.prototype.hasOwnProperty.call(data,"extraExpenses") ? (data.extraExpenses || []) : safeJSON("a1ExtraExpenses",[])
+            )
+          );
+
+          const hasNewAccounting =
+            Object.prototype.hasOwnProperty.call(data,"extraOilUsage") ||
+            Object.prototype.hasOwnProperty.call(data,"extraExpenses");
           alert(
-            "Backup Successfully Restore हो गया!"
+            "Backup Successfully Restore हो गया!\n\n" +
+            "Rice, Oil, Chicken, Masala, Production, Sales और Staff data restore हो गया।" +
+            (hasNewAccounting
+              ? "\nExtra Oil और Extra Expense भी restore हो गए।"
+              : "\nयह पुराना Backup 1.0 है, इसलिए Extra Oil/Extra Expense की पुरानी entries नहीं थीं।")
           );
 
           location.reload();
@@ -2991,6 +3012,8 @@ function renderRecentReports(){
     localStorage.removeItem(PRODUCTION_KEY);
     localStorage.removeItem("a1DailySales");
     localStorage.removeItem("a1StaffExpenses");
+    localStorage.removeItem(EXTRA_OIL_KEY);
+    localStorage.removeItem(EXTRA_EXPENSE_KEY);
 
     alert(
       "पुराना SBS Business Data पूरी तरह clear हो गया है।\n\n" +
@@ -3043,7 +3066,8 @@ function renderRecentReports(){
 (function(){
   const PREP_MASALA_KEY = "a1PreparedMasalaPurchases";
   const MASALA_MASTER_HISTORY_KEY = "a1MasalaMasterHistory";
-  const OTHER_PER_RICE_KG = 20;
+  const EXTRA_OIL_KEY = "a1ExtraOilUsage";
+  const EXTRA_EXPENSE_KEY = "a1ExtraExpenses";
   const OIL_PER_RICE_KG = 0.220;
   const MASALA_PER_RICE_KG = 0.130;
 
@@ -3058,7 +3082,14 @@ function renderRecentReports(){
     const at=String(a.savedAt||a.id||""); const bt=String(b.savedAt||b.id||"");
     return at.localeCompare(bt);
   }
-  function purchases(type){ return arr(keyFor(type)).slice().sort(sortBatch); }
+  function purchases(type){
+    if(type!=="masala") return arr(keyFor(type)).slice().sort(sortBatch);
+    const legacy=arr(MASALA_BATCH_KEY);
+    const modern=arr(PREP_MASALA_KEY);
+    const merged=[...legacy,...modern];
+    const seen=new Set();
+    return merged.filter(x=>{const id=String(x.id??"");const sig=id||JSON.stringify([x.date,x.qty,x.rate,x.cost,x.savedAt]);if(seen.has(sig))return false;seen.add(sig);return true;}).sort(sortBatch);
+  }
 
   function fifoConsume(batchList, qty){
     let need=n(qty), cost=0, allocations=[];
@@ -3092,7 +3123,7 @@ function renderRecentReports(){
       const chicken=n(p.chickenQty);
       const masalaUsed=rice*MASALA_PER_RICE_KG;
       const oilUsed=rice*OIL_PER_RICE_KG;
-      const otherCost=rice*OTHER_PER_RICE_KG;
+      const otherCost=0;
       const r=fifoConsume(batchMap.rice,rice);
       const o=fifoConsume(batchMap.oil,oilUsed);
       const c=fifoConsume(batchMap.chicken,chicken);
@@ -3101,7 +3132,7 @@ function renderRecentReports(){
       const item={...p,
         riceCost:r.cost, oilKg:oilUsed, oilCost:o.cost,
         chickenCost:c.cost, masalaUsed, masalaCost:m.cost,
-        otherCost, totalCost:r.cost+o.cost+c.cost+m.cost+otherCost,
+        otherCost:0, totalCost:r.cost+o.cost+c.cost+m.cost,
         fifo:{rice:r.allocations,oil:o.allocations,chicken:c.allocations,masala:m.allocations},
         fifoValid:ok
       };
@@ -3115,17 +3146,96 @@ function renderRecentReports(){
 
   function ledger(){ return buildLedger(getProductionHistory()); }
 
-  function currentStock(type){
-    const l=ledger();
-    const list=l.batches[type];
-    return list.reduce((s,x)=>s+Math.max(0,n(x.remaining)),0);
-  }
-  function stockValue(type){
-    const l=ledger();
-    return l.batches[type].reduce((s,x)=>s+Math.max(0,n(x.remaining))*n(x.rate),0);
-  }
+  function oilTransactionLedger(){
+    const batches=purchases("oil").map(x=>({...x,remaining:n(x.qty)}));
+    const events=[];
+    getProductionHistory().forEach(p=>events.push({date:p.date,savedAt:p.savedAt||p.id||0,type:"production",
 
-  window.getMasalaBatches=function(){ return arr(PREP_MASALA_KEY); };
+                                                     function renderExtraExpenseHistory(){
+    const box=document.getElementById("extraExpenseHistory"); if(!box)return;
+    const all=extraExpenseList().slice().reverse();
+    const list=extraExpenseHistoryAll?all:all.slice(0,1);
+    box.innerHTML=list.length?list.map(x=>`<div class="history-item"><div><b>${x.date}</b><span>${x.category}${x.note?" • "+x.note:""}</span></div><div style="text-align:right"><b>${money(x.amount)}</b><button onclick="editExtraExpense(${x.id})" style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;margin-top:5px;">Edit</button><button onclick="deleteExtraExpense(${x.id})" style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;margin-top:5px;">Delete</button></div></div>`).join(""):'<div class="empty-history">अभी कोई Extra Expense entry नहीं है।</div>';
+    const btn=document.querySelector('#extraExpensePage button[onclick="viewExtraExpenseHistory()"]');
+    if(btn)btn.innerText=extraExpenseHistoryAll?"↩ Recent 1":"📜 View All";
+  }
+  function renderExtraOilHistory(){
+    const box=document.getElementById("extraOilHistory"); if(!box)return;
+    const all=extraOilList().slice().reverse();
+    const list=extraOilHistoryAll?all:all.slice(0,1);
+    box.innerHTML=list.length?list.map(x=>`<div class="history-item"><div><b>${x.date}</b><span>${n(x.qty).toFixed(3)} KG${x.note?" • "+x.note:""}</span></div><div style="text-align:right"><button onclick="editExtraOil(${x.id})" style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;">Edit</button><button onclick="deleteExtraOil(${x.id})" style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;">Delete</button></div></div>`).join(""):'<div class="empty-history">अभी कोई Extra Oil usage entry नहीं है।</div>';
+    const e=document.getElementById("extraOilCurrentStock"); if(e)e.innerText=currentStock("oil").toFixed(3)+" KG";
+    const btn=document.querySelector('#extraOilPage button[onclick="viewExtraOilHistory()"]');
+    if(btn)btn.innerText=extraOilHistoryAll?"↩ Recent 1":"📜 View All";
+  }
+  window.viewExtraExpenseHistory=function(){extraExpenseHistoryAll=!extraExpenseHistoryAll;renderExtraExpenseHistory();};
+  window.viewExtraOilHistory=function(){extraOilHistoryAll=!extraOilHistoryAll;renderExtraOilHistory();};
+
+  window.openExtraExpense=function(){
+    hideAllPages(); const p=document.getElementById("extraExpensePage"); if(p)p.style.display="block"; setActiveNav("navEntry");
+    extraExpenseHistoryAll=false;
+    const d=document.getElementById("extraExpenseDate"); if(d&&!d.value)d.value=getLocalDateISO(); renderExtraExpenseHistory();
+  };
+  window.openExtraOil=function(){
+    hideAllPages(); const p=document.getElementById("extraOilPage"); if(p)p.style.display="block"; setActiveNav("navEntry");
+    extraOilHistoryAll=false;
+    const d=document.getElementById("extraOilDate"); if(d&&!d.value)d.value=getLocalDateISO(); renderExtraOilHistory(); updateAllStockUI();
+  };
+  window.saveExtraExpense=function(){
+    const date=document.getElementById("extraExpenseDate")?.value||getLocalDateISO();
+    const category=document.getElementById("extraExpenseCategory")?.value||"Other";
+    const amount=n(document.getElementById("extraExpenseAmount")?.value);
+    const note=(document.getElementById("extraExpenseNote")?.value||"").trim();
+    if(amount<=0){alert("Amount सही दर्ज करें।");return;}
+    const list=extraExpenseList(); list.push({id:Date.now(),date,category,amount,note,savedAt:new Date().toISOString()}); saveArr(EXTRA_EXPENSE_KEY,list);
+    document.getElementById("extraExpenseAmount").value=""; document.getElementById("extraExpenseNote").value=""; renderExtraExpenseHistory(); alert("Extra Expense Successfully Saved!");
+  };
+  window.editExtraExpense=function(id){
+    const list=extraExpenseList(),i=list.findIndex(x=>Number(x.id)===Number(id)); if(i<0)return; const x=list[i];
+    const a=prompt("Amount ₹:",n(x.amount)); if(a===null)return; const amount=n(a); if(amount<=0){alert("Amount सही दर्ज करें।");return;}
+    const note=prompt("Note:",x.note||""); if(note===null)return; x.amount=amount;x.note=note.trim();x.editedAt=new Date().toISOString();saveArr(EXTRA_EXPENSE_KEY,list);extraExpenseHistoryAll=false;renderExtraExpenseHistory();
+  };
+  window.deleteExtraExpense=function(id){if(!confirm("यह Extra Expense entry delete करनी है?"))return;saveArr(EXTRA_EXPENSE_KEY,extraExpenseList().filter(x=>Number(x.id)!==Number(id)));extraExpenseHistoryAll=false;renderExtraExpenseHistory();};
+  window.saveExtraOil=function(){
+    const date=document.getElementById("extraOilDate")?.value||getLocalDateISO(); const qty=n(document.getElementById("extraOilQty")?.value); const note=(document.getElementById("extraOilNote")?.value||"").trim();
+    if(qty<=0){alert("Oil quantity सही दर्ज करें।");return;}
+    const list=extraOilList();
+    const candidate={id:Date.now(),date,qty,note,savedAt:new Date().toISOString()};
+    list.push(candidate);
+    if(!canSaveExtraOilList(list)){
+      const before=currentStock("oil");
+      alert(`Oil Stock पर्याप्त नहीं है।\nAvailable: ${before.toFixed(3)} KG\nRequired: ${qty.toFixed(3)} KG`);
+      return;
+    }
+    saveArr(EXTRA_OIL_KEY,list);
+    extraOilHistoryAll=false;
+    document.getElementById("extraOilQty").value="";document.getElementById("extraOilNote").value="";renderExtraOilHistory();updateAllStockUI();refreshDashboard();alert("Extra Oil Usage Successfully Saved!");
+  };
+  function canSaveExtraOilList(list){
+    const batches=purchases("oil").map(x=>({...x,remaining:n(x.qty)})); const events=[];
+    getProductionHistory().forEach(p=>events.push({date:p.date,savedAt:p.savedAt||p.id||0,qty:n(p.rice)*OIL_PER_RICE_KG}));
+    list.forEach(x=>events.push({date:x.date,savedAt:x.savedAt||x.id||0,qty:n(x.qty)}));
+    events.sort((a,b)=>{const d=String(a.date||"").localeCompare(String(b.date||""));return d!==0?d:String(a.savedAt).localeCompare(String(b.savedAt));});
+    return events.every(e=>fifoConsume(batches,e.qty).ok);
+  }
+  window.editExtraOil=function(id){
+    const list=extraOilList(),i=list.findIndex(x=>Number(x.id)===Number(id));if(i<0)return;const x=list[i];
+    const q=prompt("Oil Used (KG):",n(x.qty));if(q===null)return;const qty=n(q);if(qty<=0){alert("Quantity सही दर्ज करें।");return;}
+    const note=prompt("Note:",x.note||"");if(note===null)return;x.qty=qty;x.note=note.trim();x.editedAt=new Date().toISOString();
+    if(!canSaveExtraOilList(list)){alert("यह बदलाव Oil Stock से अधिक usage कर देगा। Entry update नहीं हुई।");return;} saveArr(EXTRA_OIL_KEY,list);extraOilHistoryAll=false;renderExtraOilHistory();updateAllStockUI();refreshDashboard();
+  };
+  window.deleteExtraOil=function(id){if(!confirm("यह Extra Oil usage delete करनी है?"))return;saveArr(EXTRA_OIL_KEY,extraOilList().filter(x=>Number(x.id)!==Number(id)));extraOilHistoryAll=false;renderExtraOilHistory();updateAllStockUI();refreshDashboard();};
+
+  // Expose the accounting helpers to the canonical report engine below.
+  // They live inside this IIFE, so the report engine must access them through window.
+  window.a1BuildLedger=function(productions){ return buildLedger(productions); };
+  window.a1OilTransactionLedger=function(){ return oilTransactionLedger(); };
+  window.a1CurrentStock=function(type){ return currentStock(type); };
+  window.a1StockValue=function(type){ return stockValue(type); };
+
+  // Monthly report is defined once in the canonical report engine below.
+
+  window.getMasalaBatches=function(){ return purchases("masala"); };
   window.saveMasalaBatches=function(data){ saveArr(PREP_MASALA_KEY,data); };
   window.getRiceStock=function(){ return currentStock("rice"); };
   window.getOilStock=function(){ return currentStock("oil"); };
@@ -3195,7 +3305,7 @@ function renderRecentReports(){
     alert(h.map((x,i)=>`${i+1}. ${x.date} — ${n(x.batchWeight).toFixed(3)} KG — ${money(x.batchCost)}`).join("\n"));
   };
 
-  function updateMasalaPurchasePreview(){
+        function updateMasalaPurchasePreview(){
     const q=n(document.getElementById("masalaStockQty")?.value),r=n(document.getElementById("masalaStockRate")?.value);
     const set=(id,v)=>{const e=document.getElementById(id);if(e)e.innerText=v;};
     set("masalaPurchaseCost",money(q*r)); set("masalaAfterStock",(getMasalaStock()+q).toFixed(3)+" KG");
@@ -3287,7 +3397,6 @@ function renderRecentReports(){
     set("prodMasalaCost",masalaStatus||money(p.masalaCost));
     set("prodOilUsed",oilStatus||((p.oilKg*1000).toFixed(0)+" g"));
     set("prodOilCost",oilStatus||money(p.oilCost));
-    set("prodOtherCost",money(p.otherCost));
     set("prodChickenCost",chickenStatus||money(p.chickenCost));
     set("prodTotalCost",p.fifoValid?money(p.totalCost):"Stock उपलब्ध नहीं है");
   };
@@ -3315,12 +3424,7 @@ function renderRecentReports(){
   };
   window.updateStaffExpensePreview=function(){const date=document.getElementById("staffExpenseDate")?.value;if(!date)return;const total=getStaffExpenses().filter(x=>x.date===date).reduce((s,x)=>s+n(x.amount),0);const e=document.getElementById("savedStaffExpensePreview");if(e)e.innerText=money(total);};
 
-  window.renderDailyReport=function(){
-    const date=document.getElementById("reportDate")?.value;if(!date)return;const productions=buildLedger(getProductionHistory()).calculated.filter(x=>x.date===date);const sales=getSalesData().filter(x=>x.date===date).reduce((s,x)=>s+n(x.amount),0);const staff=getStaffExpenses().filter(x=>x.date===date).reduce((s,x)=>s+n(x.amount),0);const rice=productions.reduce((s,x)=>s+n(x.rice),0),cost=productions.reduce((s,x)=>s+n(x.totalCost),0),profit=sales-cost-staff;const set=(id,v)=>{const e=document.getElementById(id);if(e)e.innerText=v;};set("reportRiceUsed",rice.toFixed(3)+" KG");set("reportProductionCost",money(cost));set("reportSales",money(sales));set("reportProductionEntries",productions.length);set("reportStaffExpense",money(staff));set("reportProfit",money(profit));const l=document.getElementById("reportResultLabel");if(l)l.innerText=profit>=0?"Net Profit":"Net Loss";renderRecentReports();
-  };
-  window.renderRecentReports=function(){
-    const box=document.getElementById("recentReports");if(!box)return;const dates=new Set();getProductionHistory().forEach(x=>dates.add(x.date));getSalesData().forEach(x=>dates.add(x.date));getStaffExpenses().forEach(x=>dates.add(x.date));const list=[...dates].filter(Boolean).sort().reverse().slice(0,10);if(!list.length){box.innerHTML='<div class="empty-history">अभी कोई Daily Report नहीं है।</div>';return;}const led=buildLedger(getProductionHistory()).calculated;box.innerHTML=list.map(date=>{const ps=led.filter(x=>x.date===date),s=getSalesData().filter(x=>x.date===date).reduce((a,x)=>a+n(x.amount),0),st=getStaffExpenses().filter(x=>x.date===date).reduce((a,x)=>a+n(x.amount),0),c=ps.reduce((a,x)=>a+n(x.totalCost),0),p=s-c-st;return `<div class="history-item"><div><b>${date}</b><span>Sales ${money(s)} | Cost ${money(c)} | Staff ${money(st)}</span></div><div style="text-align:right"><b>${money(p)}</b><span>${p>=0?'Profit':'Loss'}</span></div></div>`}).join("");
-  };
+  // Daily and recent reports are defined once in the canonical report engine below.
 
   window.refreshDashboard=function(){
     const today=getLocalDateISO();const sales=getSalesData().filter(x=>x.date===today).reduce((s,x)=>s+n(x.amount),0);const ps=buildLedger(getProductionHistory()).calculated.filter(x=>x.date===today);const cost=ps.reduce((s,x)=>s+n(x.totalCost),0);const staff=getStaffExpenses().filter(x=>x.date===today).reduce((s,x)=>s+n(x.amount),0);const profit=sales-cost-staff;const set=(id,v)=>{const e=document.getElementById(id);if(e)e.innerText=v;};set("totalSales",money(sales));set("totalExpense",money(cost));set("totalStaffExpense",money(staff));set("totalProfit",money(profit));const pl=document.getElementById("profitLabel");if(pl)pl.innerText=profit>=0?"Profit":"Loss";updateAllStockUI();renderRecentReports();if(document.getElementById("reportDate")?.value)renderDailyReport();if(document.getElementById("productionPage")?.style.display!=="none"){updateProductionPreview();renderProductionHistory();}
@@ -3328,15 +3432,42 @@ function renderRecentReports(){
 
   window.openStock=function(){hideAllPages();const p=document.getElementById("stockPage");if(p)p.style.display="block";setActiveNav("navStock");updateAllStockUI();updateRicePreview();updateOilPreview();updateChickenPreview();updateMasalaPurchasePreview();renderRiceHistory();renderOilHistory();renderChickenHistory();renderMasalaHistory();};
   window.openMasalaMaster=function(){hideAllPages();const p=document.getElementById("masalaPage");if(p)p.style.display="block";setActiveNav("navSettings");renderMasalaRows();renderMasalaMasterHistory();};
-  window.openDataManager=function(){hideAllPages();const p=document.getElementById("dataManagerPage");if(p)p.style.display="block";setActiveNav("navSettings");renderDataManager("sales");};
-  window.renderDataManager=function(type){
-    const tabs={sales:"dmSalesTab",staff:"dmStaffTab",rice:"dmRiceTab",oil:"dmOilTab",chicken:"dmChickenTab",production:"dmProductionTab",masala:"dmMasalaTab"};Object.values(tabs).forEach(id=>document.getElementById(id)?.classList.remove("active"));document.getElementById(tabs[type]||tabs.sales)?.classList.add("active");const box=document.getElementById("dataManagerList");if(!box)return;
-    let list=[],html="";
-    if(type==="sales")list=getSalesData(),html=list.slice().reverse().map(x=>`<div class="history-item"><div><b>${x.date}</b><span>Sale</span></div><div><b>${money(x.amount)}</b><button onclick="editSale(${x.id})">Edit</button> <button onclick="deleteSale(${x.id})">Delete</button></div></div>`).join("");
-    if(type==="staff")list=getStaffExpenses(),html=list.slice().reverse().map(x=>`<div class="history-item"><div><b>${x.date}</b><span>Staff Payment</span></div><div><b>${money(x.amount)}</b><button onclick="editStaffExpense(${x.id})">Edit</button> <button onclick="deleteStaffExpense(${x.id})">Delete</button></div></div>`).join("");
-    if(type==="rice"||type==="oil"||type==="chicken"||type==="masala"){list=arr(keyFor(type));html=list.slice().reverse().map(x=>`<div class="history-item"><div><b>${x.date}</b><span>${n(x.qty).toFixed(3)} KG × ₹${n(x.rate).toFixed(2)}/KG</span></div><div><b>${money(x.cost)}</b><button onclick="editPurchase('${type}',${x.id})">Edit</button> <button onclick="deletePurchase('${type}',${x.id})">Delete</button></div></div>`).join("");}
-    if(type==="production")list=getProductionHistory(),html=list.slice().reverse().map(x=>`<div class="history-item"><div><b>${x.date}</b><span>Rice ${n(x.rice).toFixed(3)} KG | Chicken ${n(x.chickenQty).toFixed(3)} KG</span></div><div><b>${money(x.totalCost||0)}</b><button onclick="editProduction(${x.id})">Edit</button> <button onclick="deleteProduction(${x.id})">Delete</button></div></div>`).join("");
-    box.innerHTML=html||'<div class="empty-history">इस category में कोई entry नहीं है।</div>';
+  window.openDataManager=function(){hideAllPages();const p=document.getElementById("dataManagerPage");if(p)p.style.display="block";setActiveNav("navSettings");dataManagerHistoryExpanded=false;renderDataManager("sales",true);};
+  // Data Management: show only the latest entry by default for every category.
+  // Each category has its own View All / Show Recent 1 control.
+  let dataManagerHistoryExpanded=false;
+  let currentDataManagerType="sales";
+  window.toggleDataManagerHistory=function(){
+    dataManagerHistoryExpanded=!dataManagerHistoryExpanded;
+    renderDataManager(currentDataManagerType, true);
+  };
+  window.renderDataManager=function(type, keepHistoryState=false){
+    const tabs={sales:"dmSalesTab",staff:"dmStaffTab",rice:"dmRiceTab",oil:"dmOilTab",chicken:"dmChickenTab",production:"dmProductionTab",masala:"dmMasalaTab"};
+    if(!keepHistoryState){ dataManagerHistoryExpanded=false; }
+    currentDataManagerType=type||"sales";
+    Object.values(tabs).forEach(id=>document.getElementById(id)?.classList.remove("active"));
+    document.getElementById(tabs[currentDataManagerType]||tabs.sales)?.classList.add("active");
+    const box=document.getElementById("dataManagerList");if(!box)return;
+    let list=[],items=[];
+    if(currentDataManagerType==="sales"){
+      list=getSalesData();
+      items=list.slice().reverse().map(x=>`<div class="history-item"><div><b>${x.date}</b><span>Sale</span></div><div><b>${money(x.amount)}</b><button onclick="editSale(${x.id})">Edit</button> <button onclick="deleteSale(${x.id})">Delete</button></div></div>`);
+    }
+    if(currentDataManagerType==="staff"){
+      list=getStaffExpenses();
+      items=list.slice().reverse().map(x=>`<div class="history-item"><div><b>${x.date}</b><span>Staff Payment</span></div><div><b>${money(x.amount)}</b><button onclick="editStaffExpense(${x.id})">Edit</button> <button onclick="deleteStaffExpense(${x.id})">Delete</button></div></div>`);
+    }
+    if(currentDataManagerType==="rice"||currentDataManagerType==="oil"||currentDataManagerType==="chicken"||currentDataManagerType==="masala"){
+      list=arr(keyFor(currentDataManagerType));
+      items=list.slice().reverse().map(x=>`<div class="history-item"><div><b>${x.date}</b><span>${n(x.qty).toFixed(3)} KG × ₹${n(x.rate).toFixed(2)}/KG</span></div><div><b>${money(x.cost)}</b><button onclick="editPurchase('${currentDataManagerType}',${x.id})">Edit</button> <button onclick="deletePurchase('${currentDataManagerType}',${x.id})">Delete</button></div></div>`);
+    }
+    if(currentDataManagerType==="production"){
+      list=getProductionHistory();
+      items=list.slice().reverse().map(x=>`<div class="history-item"><div><b>${x.date}</b><span>Rice ${n(x.rice).toFixed(3)} KG | Chicken ${n(x.chickenQty).toFixed(3)} KG</span></div><div><b>${money(x.totalCost||0)}</b><button onclick="editProduction(${x.id})">Edit</button> <button onclick="deleteProduction(${x.id})">Delete</button></div></div>`);
+    }
+    const visible=dataManagerHistoryExpanded?items:items.slice(0,1);
+    box.innerHTML=(visible.join("")||'<div class="empty-history">इस category में कोई entry नहीं है।</div>')+
+      (items.length>1?`<button type="button" onclick="toggleDataManagerHistory()" style="width:100%;margin-top:8px;border:1px solid #b00000;background:#fff;color:#b00000;border-radius:8px;padding:9px;font-weight:700;">${dataManagerHistoryExpanded?'▲ Show Recent 1':'📜 View All History'}</button>`:'');
   };
 
   window.editSale=function(id){const l=getSalesData(),i=l.findIndex(x=>Number(x.id)===Number(id));if(i<0)return;const v=prompt("Sale Amount ₹:",n(l[i].amount));if(v===null)return;const a=n(v);if(a<0)return;l[i].amount=a;l[i].editedAt=new Date().toISOString();saveSalesData(l);renderDataManager("sales");refreshDashboard();renderDailyReport();};
@@ -3390,9 +3521,9 @@ function renderRecentReports(){
   window.updateOilPreview=function(){const q=n(document.getElementById("oilQty")?.value),r=n(document.getElementById("oilRate")?.value);const e=document.getElementById("oilPurchaseCost"),s=document.getElementById("oilAfterStock");if(e)e.innerText=money(q*r);if(s)s.innerText=(currentStock("oil")+q).toFixed(3)+" KG";};
   window.updateChickenPreview=function(){const q=n(document.getElementById("chickenQty")?.value),r=n(document.getElementById("chickenRate")?.value);const e=document.getElementById("chickenPurchaseCost"),s=document.getElementById("chickenAfterStock");if(e)e.innerText=money(q*r);if(s)s.innerText=(currentStock("chicken")+q).toFixed(3)+" KG";};
   window.renderRiceHistory=function(){const b=document.getElementById("riceHistory");if(!b)return;const h=arr(RICE_KEY).slice().sort(sortBatch).reverse();b.innerHTML=h.length?h.slice(0,1).map(x=>`<div class="history-item"><div><b>${x.date}</b><span>${n(x.qty).toFixed(3)} KG × ₹${n(x.rate).toFixed(2)}/KG</span></div><div style="text-align:right"><b>${money(x.cost)}</b><button onclick="editPurchase('rice',${x.id})" style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;">Edit</button><button onclick="deletePurchase('rice',${x.id})" style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;">Delete</button></div></div>`).join(""):'<div class="empty-history">अभी कोई Rice Purchase record नहीं है।</div>';};
-  window.renderOilHistory=function(){const b=document.getElementById("oilHistory");if(!b)return;const h=arr(OIL_KEY).slice().sort(sortBatch).reverse();b.innerHTML=h.length?h.slice(0,1).map(x=>`<div class="history-item"><div><b>${x.date}</b><span>${n(x.qty).toFixed(3)} KG × ₹${n(x.rate).toFixed(2)}/KG</span></div><div style="text-align:right"><b>${money(x.cost)}</b><button onclick="editPurchase('oil',${x.id})" style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;">Edit</button><button onclick="deletePurchase('oil',${x.id})" style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;">Delete</button></div></div>`).join(""):'<div class="empty-history">अभी कोई Oil Purchase record नहीं है।</div>';};
-  window.renderChickenHistory=function(){const b=document.getElementById("chickenHistory");if(!b)return;const h=arr(CHICKEN_KEY).slice().sort(sortBatch).reverse();b.innerHTML=h.length?h.slice(0,1).map(x=>`<div class="history-item"><div><b>${x.date}</b><span>${n(x.qty).toFixed(3)} KG × ₹${n(x.rate).toFixed(2)}/KG</span></div><div style="text-align:right"><b>${money(x.cost)}</b><button onclick="editPurchase('chicken',${x.id})" style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;">Edit</button><button onclick="deletePurchase('chicken',${x.id})" style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;">Delete</button></div></div>`).join(""):'<div class="empty-history">अभी कोई Chicken Purchase record नहीं है।</div>';};
-  function productionHistoryMarkup(limit){
+  window.renderOilHistory=function(){const b=document.getElementById("oilHistory");if(!b)return;const h=arr(OIL_KEY).slice().sort(sortBatch).reverse();b.innerHTML=h.length?h.slice(0,1).map(x=>`<div class="history-item"><div><b>${x.date}</b><span>${n(x.qty).toFixed(3)} KG × ₹${n(x.rate).toFixed(2)}/KG</span></div><div style="text-align:right"><b>${money(x.cost)}</b><button onclick="editPurchase('oil',${x.id})" style="border:0;background:#8b0000;color:white;border-radius:7px;padding:6px;">Edit</button><button onclick="deletePurchase('oil',${x.id})" style="border:0;background:#b00000;color:white;border-radius:7px;padding:6px;">Delete</button></div></div>`).join(""):'<div class="empty-history">अभी कोई Oil Purchase record नहीं है।</div>'
+
+    function productionHistoryMarkup(limit){
     const calculated=buildLedger(getProductionHistory()).calculated.slice().sort(sortBatch).reverse();
     const h=Number.isFinite(limit)?calculated.slice(0,limit):calculated;
     if(!h.length)return '<div class="empty-history">अभी कोई Production record नहीं है।</div>';
@@ -3445,6 +3576,38 @@ function renderRecentReports(){
     renderPurchase(document.getElementById("chickenHistoryFull"),arr(CHICKEN_KEY),"chicken");
     renderPurchase(document.getElementById("masalaHistoryFull"),arr(PREP_MASALA_KEY),"masala");
   };
+  // Daily Report date fix: explicitly listen to both change and input events.
+  // This ensures Android/mobile date pickers refresh the report immediately for the selected date.
+  function initReportControls(){
+    try{ prepareReportsView(false); }catch(e){ console.error(e); }
+    const reportDate=document.getElementById("reportDate");
+    if(reportDate && !reportDate.dataset.a1Bound){
+      const refresh=()=>{ if(window.renderDailyReport) window.renderDailyReport(); };
+      reportDate.addEventListener("change",refresh);
+      reportDate.addEventListener("input",refresh);
+      reportDate.dataset.a1Bound="1";
+    }
+    const reportMonth=document.getElementById("reportMonth");
+    if(reportMonth && !reportMonth.dataset.a1Bound){
+      const refresh=()=>{ if(window.renderMonthlyReport) window.renderMonthlyReport(); };
+      reportMonth.addEventListener("change",refresh);
+      reportMonth.addEventListener("input",refresh);
+      reportMonth.dataset.a1Bound="1";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded",function(){
+    initReportControls();
+    // One more pass after Android/browser form restoration has completed.
+    setTimeout(function(){
+      try{
+        prepareReportsView(false);
+        if(window.renderDailyReport) window.renderDailyReport();
+        if(window.renderMonthlyReport) window.renderMonthlyReport();
+      }catch(e){ console.error(e); }
+    },50);
+  });
+
   // Fix live input calculations and keep UI quantities visible.
   document.addEventListener("input",function(e){
     if(["masalaStockQty","masalaStockRate"].includes(e.target.id))updateMasalaPurchasePreview();
@@ -3459,8 +3622,127 @@ function renderRecentReports(){
     try{renderMasalaRows();renderMasalaMasterHistory();renderRiceHistory();renderOilHistory();renderChickenHistory();renderMasalaHistory();renderProductionHistory();renderCompleteHistory();updateAllStockUI();updateProductionPreview();updateSalesPreview();updateStaffExpensePreview();refreshDashboard();}catch(e){console.error(e);}
   });
 })();
+
+
+  function reportNum(v){ const x=Number(v); return Number.isFinite(x)?x:0; }
+
+  // ===== FINAL REPORT ENGINE v4 — single canonical date/month aggregation =====
+  // Normalizes stored dates so reports work even if an older record contains a time part.
+  function reportDateKey(v){
+    const s=String(v==null?"":v).trim();
+    if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+    return s;
+  }
+  function reportMonthKey(v){ return reportDateKey(v).slice(0,7); }
+
+  window.renderDailyReport=function(){
+    const dateEl=document.getElementById("reportDate");
+    let date=reportDateKey(dateEl?.value);
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){
+      const dates=getAllReportDates();
+      date=dates[0]||getLocalDateISO();
+      if(dateEl) dateEl.value=date;
+    }
+
+    const production=window.a1BuildLedger(getProductionHistory()).calculated
+      .filter(x=>reportDateKey(x.date)===date);
+    const salesList=getSalesData().filter(x=>reportDateKey(x.date)===date);
+    const staffList=getStaffExpenses().filter(x=>reportDateKey(x.date)===date);
+    const sales=salesList.reduce((sum,x)=>sum+reportNum(x.amount),0);
+    const staff=staffList.reduce((sum,x)=>sum+reportNum(x.amount),0);
+    const rice=production.reduce((sum,x)=>sum+reportNum(x.rice),0);
+    const cost=production.reduce((sum,x)=>sum+reportNum(x.totalCost),0);
+    const profit=sales-cost-staff;
+
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.innerText=v;};
+    set("reportRiceUsed",rice.toFixed(3)+" KG");
+    set("reportProductionCost",money(cost));
+    set("reportSales",money(sales));
+    set("reportProductionEntries",production.length);
+    set("reportStaffExpense",money(staff));
+    set("reportProfit",money(profit));
+    const label=document.getElementById("reportResultLabel");
+    if(label) label.innerText=profit>=0?"Net Profit":"Net Loss";
+
+    // Daily report intentionally excludes Extra Expense and Extra Oil from Daily P/L.
+    renderRecentReports();
+  };
+
+  let reportHistoryExpanded=false;
+  window.toggleReportHistory=function(){
+    reportHistoryExpanded=!reportHistoryExpanded;
+    window.renderRecentReports();
+  };
+  window.renderRecentReports=function(){
+    const box=document.getElementById("recentReports");
+    if(!box)return;
+    const dates=new Set(getAllReportDates());
+    const all=[...dates].filter(Boolean).sort().reverse();
+    if(!all.length){box.innerHTML='<div class="empty-history">अभी कोई Daily Report नहीं है।</div>';return;}
+    const list=reportHistoryExpanded?all:all.slice(0,1);
+    const led=window.a1BuildLedger(getProductionHistory()).calculated;
+    box.innerHTML=list.map(date=>{
+      const ps=led.filter(x=>reportDateKey(x.date)===date);
+      const s=getSalesData().filter(x=>reportDateKey(x.date)===date).reduce((a,x)=>a+reportNum(x.amount),0);
+      const st=getStaffExpenses().filter(x=>reportDateKey(x.date)===date).reduce((a,x)=>a+reportNum(x.amount),0);
+      const c=ps.reduce((a,x)=>a+reportNum(x.totalCost),0);
+      const p=s-c-st;
+      return `<div class="history-item"><div><b>${date}</b><span>Sales ${money(s)} | Cost ${money(c)} | Staff ${money(st)}</span></div><div style="text-align:right"><b>${money(p)}</b><span>${p>=0?'Profit':'Loss'}</span></div></div>`;
+    }).join("")+`<button type="button" onclick="toggleReportHistory()" style="width:100%;margin-top:8px;border:1px solid #b00000;background:#fff;color:#b00000;border-radius:8px;padding:9px;font-weight:700;">${reportHistoryExpanded?'▲ Show Recent 1':'📜 View All History'}</button>`;
+  };
+
+  window.renderMonthlyReport=function(){
+    const monthEl=document.getElementById("reportMonth");
+    let month=String(monthEl?.value||"").slice(0,7);
+    if(!/^\d{4}-\d{2}$/.test(month)){
+      month=getAllReportMonths()[0]||getLocalDateISO().slice(0,7);
+      if(monthEl)monthEl.value=month;
+    }
+
+    const productions=window.a1BuildLedger(getProductionHistory()).calculated
+      .filter(x=>reportMonthKey(x.date)===month);
+    const salesAll=getSalesData().filter(x=>reportMonthKey(x.date)===month);
+    const staffAll=getStaffExpenses().filter(x=>reportMonthKey(x.date)===month);
+    const expenses=safeJSON("a1ExtraExpenses",[]).filter(x=>reportMonthKey(x.date)===month);
+    const extraOil=window.a1OilTransactionLedger().usage.filter(x=>x.type==="extra"&&reportMonthKey(x.date)===month);
+
+    const sales=salesAll.reduce((s,x)=>s+reportNum(x.amount),0);
+    const staff=staffAll.reduce((s,x)=>s+reportNum(x.amount),0);
+    const productionCost=productions.reduce((s,x)=>s+reportNum(x.totalCost),0);
+    const rice=productions.reduce((s,x)=>s+reportNum(x.rice),0);
+    const extraExpense=expenses.reduce((s,x)=>s+reportNum(x.amount),0);
+    const extraOilUsed=extraOil.reduce((s,x)=>s+reportNum(x.qty),0);
+    const extraOilCost=extraOil.reduce((s,x)=>s+reportNum(x.cost),0);
+    const profit=sales-productionCost-staff-extraOilCost-extraExpense;
+
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.innerText=v;};
+    set("monthlySales",money(sales));
+    set("monthlyProductionCost",money(productionCost));
+    set("monthlyStaffExpense",money(staff));
+    set("monthlyExtraOilCost",money(extraOilCost));
+    set("monthlyExtraExpense",money(extraExpense));
+    set("monthlyRiceUsed",rice.toFixed(3)+" KG");
+    set("monthlyExtraOilUsed",extraOilUsed.toFixed(3)+" KG");
+    set("monthlyProfit",money(profit));
+    const label=document.getElementById("monthlyResultLabel");
+    if(label)label.innerText=profit>=0?"Monthly Net Profit":"Monthly Net Loss";
+
+    const cats={Pyaj:0,Lahsun:0,Adrak:0,Mirch:0,Packing:0,Other:0};
+    expenses.forEach(x=>{const k=x.category||"Other";cats[k]=(cats[k]||0)+reportNum(x.amount);});
+    const b=document.getElementById("monthlyExpenseBreakdown");
+    if(b)b.innerHTML=Object.entries(cats).map(([k,v])=>`<div class="history-item"><div><b>${k}</b></div><div><b>${money(v)}</b></div></div>`).join("");
+
+  };
+
+  // Make Android/browser date controls respond immediately as well as on change.
+  document.addEventListener("input",function(e){
+    if(e.target?.id==="reportDate") window.renderDailyReport();
+    if(e.target?.id==="reportMonth") window.renderMonthlyReport();
+  },true);
+
 </script>
 
 </body>
 </html>
-    
+
+                                       
