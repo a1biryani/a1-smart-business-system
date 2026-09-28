@@ -142,7 +142,7 @@ jobs:
           protected void onCreate(Bundle savedInstanceState) {
           super.onCreate(savedInstanceState);
 
-          bb  webView = new WebView(this);
+          webView = new WebView(this);
           setContentView(webView);
 
           WebSettings settings = webView.getSettings();
